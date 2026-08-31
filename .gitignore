@@ -1,4 +1,6 @@
 output_files/*
 simulation/*
-c5_pin_model_dump.txt
+db/*
 incremental_db/*
+c5_pin_model_dump.txt
+tarea01_verilog.v.bak
