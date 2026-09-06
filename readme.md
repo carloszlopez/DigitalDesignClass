@@ -4,9 +4,6 @@
 /media/
     All media files (diagrams, documentation, etc)
 
-/tareaX/
-    All project specific files (verilog, simulations, etc)
-
 ## DE10-Standard Pin Assigment Example
 
 *Disable what you dont need*

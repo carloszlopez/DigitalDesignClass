@@ -1,17 +1,31 @@
 module display_7_seg
 (
-    input  wire A, B, C, D,
-    output wire S0, S1, S2, S3, S4, S5, S6
+    input  wire [3:0] SW,
+    output wire [6:0] HEX0
 );
 
-	assign S0 =	(~A & ~B & ~C & D) | (~A & B & ~C & ~D) | (A & ~B & C & D) 
-				| (A & B & ~C & D);
-	assign S1 =	(~A & B & ~C & D) | (A & B & ~D) | (A & C & D) | (B & C & ~D);
-	assign S2 =	(~A & ~B & C & ~D) | (A & B & C) | (A & B & ~D);
-	assign S3 = (~A & ~B & ~C & D) | (~A & B & ~C & ~D) | (A & ~B & C & ~D) 
-				| (B & C & D);
-	assign S4 = (~A & B & ~C) | (~A & D) | (~B & ~C & D);
-	assign S5 = (~A & ~B & C) | (~A & ~B & D) | (~A & C & D) | (A & B & ~C & D);
-	assign S6 = (~A & ~B & ~C) | (A & B & ~C & ~D);
+	assign HEX0[0] =	(~SW[3] & ~SW[2] & ~SW[1] & SW[0]) |
+					(~SW[3] & SW[2] & ~SW[1] & ~SW[0]) |
+					(SW[3] & ~SW[2] & SW[1] & SW[0]) |
+					(SW[3] & SW[2] & ~SW[1] & SW[0]);
+	assign HEX0[1] =	(~SW[3] & SW[2] & ~SW[1] & SW[0]) |
+					(SW[3] & SW[2] & ~SW[0]) | (SW[3] & SW[1] & SW[0]) |
+					(SW[2] & SW[1] & ~SW[0]);
+	assign HEX0[2] =	(~SW[3] & ~SW[2] & SW[1] & ~SW[0]) |
+					(SW[3] & SW[2] & SW[1]) |
+					(SW[3] & SW[2] & ~SW[0]);
+	assign HEX0[3] = (~SW[3] & ~SW[2] & ~SW[1] & SW[0]) |
+					(~SW[3] & SW[2] & ~SW[1] & ~SW[0]) |
+					(SW[3] & ~SW[2] & SW[1] & ~SW[0]) |
+					(SW[2] & SW[1] & SW[0]);
+	assign HEX0[4] = (~SW[3] & SW[2] & ~SW[1]) |
+					(~SW[3] & SW[0]) |
+					(~SW[2] & ~SW[1] & SW[0]);
+	assign HEX0[5] = (~SW[3] & ~SW[2] & SW[1]) |
+					(~SW[3] & ~SW[2] & SW[0]) |
+					(~SW[3] & SW[1] & SW[0]) |
+					(SW[3] & SW[2] & ~SW[1] & SW[0]);
+	assign HEX0[6] = (~SW[3] & ~SW[2] & ~SW[1]) |
+					(SW[3] & SW[2] & ~SW[1] & ~SW[0]);
 
 endmodule
