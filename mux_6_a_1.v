@@ -1,9 +1,9 @@
-module tarea03_mux_6_a_1
+module mux_6_a_1
 (
-    input  wire A, B, C, D, E, F, SEL0, SEL1, SEL2, 
-    output wire S0
+    input  wire [8:0] SW, 
+    output wire [0:0] LEDR
 );
 
-	assign S0 = SEL2 ? (SEL1 ? 1'b0 : (SEL0 ? F : E)) 
-                        : (SEL1 ? (SEL0 ? D : C) : (SEL0 ? B : A));
+	assign LEDR[0] = SW[8] ? (SW[7] ? 1'b0 : (SW[6] ? SW[5] : SW[4])) 
+                        : (SW[7] ? (SW[6] ? SW[3] : SW[2]) : (SW[6] ? SW[1] : SW[0]));
 endmodule
