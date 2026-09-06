@@ -1,10 +1,15 @@
-#  Mux de 2 a 1, con entradas y salida de 4bits c/u.
+# DE10-Standard Quartus projects for Digital desing class
 
-## Black box design
-![alt text](/misc/black_box_design.png)
+## Structure
+/media/
+    All media files (diagrams, documentation, etc)
 
-## Pin configuration
-![alt text](/misc/pin_cfg.png)
+/tareaX/
+    All project specific files (verilog, simulations, etc)
 
-## Simulation
-![alt text](/misc/simulation.png)
+## DE10-Standard Pin Assigment Example
+
+*Disable what you dont need*
+![alt text](/media/pin_cfg_example.png)
+
+For more information check the [Pin_Assigment_DE10_Standard](/media/Pin_Assigment_DE10_Standard.txt) document

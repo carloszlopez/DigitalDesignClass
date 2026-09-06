@@ -1,6 +1,35 @@
-output_files/*
-simulation/*
-db/*
-incremental_db/*
-c5_pin_model_dump.txt
-tarea01_verilog.v.bak
+# # Quartus: resultados generados
+# /db/
+# /incremental_db/
+# /output_files/
+# /simulation/
+
+# # Otras carpetas temporales de Quartus
+# /.qsys_edit/
+# /greybox_tmp/
+# /hc_output/
+
+# # Questa / ModelSim
+# /work/
+# transcript
+# vsim.wlf
+# *.vcd
+# *.wlf
+
+# # Archivos temporales y copias de seguridad
+# *.bkp
+# *.bak
+# *~
+# *.smsg
+# *.rpt
+# *.summary
+# *.done
+
+# # Configuración local de la interfaz
+# *.qws
+# *.lpdf
+
+# # Archivos generados específicos
+# /c5_pin_model_dump.txt
+# /cs_pin_model_dump.txt
+# /dir
