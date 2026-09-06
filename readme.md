@@ -1,13 +1,10 @@
-#  Decodificador binario a 7 segmentos de 4 bits
+#  Mux de 2 a 1, con entradas y salida de 4bits c/u.
 
-## Balck box
-![alt text](misc/black_box.png)
+## Black box design
+![alt text](/misc/black_box_design.png)
 
-## Truth table
-![alt text](misc/Truth_table.png)
+## Pin configuration
+![alt text](/misc/pin_cfg.png)
 
-## DE10 Cyclone pin config
-![alt text](misc/Pin_cfg.png)
-
-## Physical demo
-https://www.youtube.com/shorts/iz6Q2c5XTwg
+## Simulation
+![alt text](/misc/simulation.png)
