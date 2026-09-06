@@ -1,9 +1,8 @@
-module tarea03_mux_2_a_1
+module mux_2_a_1
 (
-    input  wire[3:0] A, B,
-    input  wire SEL0,	 
-    output wire[3:0] S0
+    input  wire[8:0] SW,	 
+    output wire[3:0] LEDR
 );
 
-	assign S0 = SEL0 ? B : A;
+	assign LEDR = SW[8] ? SW[7:4] : SW[3:0];
 endmodule
