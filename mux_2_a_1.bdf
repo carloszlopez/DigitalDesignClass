@@ -24,7 +24,7 @@ on the Quartus Prime software download page.
 	(input)
 	(rect 648 296 816 312)
 	(text "INPUT" (rect 125 0 153 9)(font "Arial" (font_size 6)))
-	(text "SW[8]" (rect 5 0 35 12)(font "Intel Clear" ))
+	(text "SW[8]" (rect 5 0 34 12)(font "Intel Clear" ))
 	(pt 168 8)
 	(drawing
 		(line (pt 84 12)(pt 109 12))
@@ -35,6 +35,7 @@ on the Quartus Prime software download page.
 		(line (pt 109 12)(pt 113 8))
 	)
 	(text "VCC" (rect 128 7 148 16)(font "Arial" (font_size 6)))
+	(annotation_block (location)(rect 576 312 648 328))
 )
 (pin
 	(input)
@@ -56,7 +57,7 @@ on the Quartus Prime software download page.
 	(input)
 	(rect 648 208 816 224)
 	(text "INPUT" (rect 125 0 153 9)(font "Arial" (font_size 6)))
-	(text "SW[3:0]" (rect 5 0 43 12)(font "Intel Clear" ))
+	(text "SW[3:0]" (rect 5 0 42 12)(font "Intel Clear" ))
 	(pt 168 8)
 	(drawing
 		(line (pt 84 12)(pt 109 12))
@@ -72,7 +73,7 @@ on the Quartus Prime software download page.
 	(output)
 	(rect 1016 224 1192 240)
 	(text "OUTPUT" (rect 1 0 39 9)(font "Arial" (font_size 6)))
-	(text "LEDR" (rect 90 0 119 10)(font "Arial" ))
+	(text "LEDR[0]" (rect 90 0 132 10)(font "Arial" ))
 	(pt 0 8)
 	(drawing
 		(line (pt 0 8)(pt 52 8))
