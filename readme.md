@@ -1,13 +1,12 @@
-#  Decodificador binario a 7 segmentos de 4 bits
+# DE10-Standard Quartus projects for Digital desing class
 
-## Balck box
-![alt text](misc/black_box.png)
+## Structure
+/media/
+    All media files (diagrams, documentation, etc)
 
-## Truth table
-![alt text](misc/Truth_table.png)
+## DE10-Standard Pin Assigment Example
 
-## DE10 Cyclone pin config
-![alt text](misc/Pin_cfg.png)
+*Disable what you dont need*
+![alt text](/media/pin_cfg_example.png)
 
-## Physical demo
-https://www.youtube.com/shorts/iz6Q2c5XTwg
+For more information check the [Pin_Assigment_DE10_Standard](/media/Pin_Assigment_DE10_Standard.txt) document
