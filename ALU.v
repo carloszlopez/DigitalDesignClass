@@ -1,32 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Company: ITESO 
-// Engineer: Carlos Zepeda 
-// Description: This model of an ALU is able to do below operations 
-//                  with a and b inputs, according to the ctrl input
-
-// ctrl             Operation
-// 0                Suma aritmética de números signados de entrada:
-//                  sistema numérico complemento a 2.
-// 
-// 1                Resta aritmética de números signados de entrada:
-//                  sistema numérico complemento a 2.
-// 
-// 2                Negativo de B. Donde B es un numero signado.
-// 
-// 3                Multiplicación de números signados de entrada:
-//                  sistema numérico complemento a 2.
-// 
-// 4                Operación lógica AND
-// 
-// 5                Operación lógica OR
-// 
-// 6                Negación lógica A
-// 
-// 7                Operación lógica XOR
-// 
-// 8                Corrimiento de bits: Result = A << B[3:0]
-// 
-// 9                Corrimiento de bits: Result = A >> B[3:0
+// Company: ITESO
+// Engineer: Carlos Zepeda
+// Description: Parameterized combinational ALU. It performs signed arithmetic,
+//              bitwise logic, and shift operations on inputs A and B according
+//              to ctrl. It outputs the result and the carry, overflow,
+//              negative, and zero flags.
 ////////////////////////////////////////////////////////////////////////////////
 
 module ALU #(

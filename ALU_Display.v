@@ -1,8 +1,11 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Company: ITESO 
-// Engineer: Carlos Zepeda 
-// Description: This module describes an ALU and display used represent the 
-//              results
+// Company: ITESO
+// Engineer: Carlos Zepeda
+// Description: Top-level module for the ALU and seven-segment displays.
+//              It captures operands and the selected operation from the
+//              switches, stores the ALU result, and displays arithmetic
+//              results in decimal or logic results in hexadecimal.
+//              HEX3 indicates a negative arithmetic result.
 ////////////////////////////////////////////////////////////////////////////////
 module ALU_Display #(
     // a and b lenght
