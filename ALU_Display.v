@@ -43,14 +43,15 @@ module ALU_Display #(
 
     // digits
     reg [3:0] digit0, digit1, digit2;
+    wire [3:0] bcd_hundreds, bcd_tens, bcd_ones;
 
     // display sign if negative and aritmetic operation
     wire isArith, isNeg; 
     wire [lenghtOut-1:0] magnitude;
     assign isArith = wCtrl <= 4'd3;
-    assign isNeg = wRes[lenghtOut-1];
+    assign isNeg = wRes[lenghtOut-1] & isArith;
     assign magnitude = isNeg ? (~wRes + 1'b1) : wRes;
-    assign HEX3 = (isNeg & isArith) ? SIGN_ON : SIGN_OFF;
+    assign HEX3 = (isNeg) ? SIGN_ON : SIGN_OFF;
 
     // module instances
     ALU #(.len(lenghtIn)) alu_inst (
@@ -80,6 +81,15 @@ module ALU_Display #(
         .SW(digit2),
         // outputs
         .HEX0(HEX2)
+    );
+
+    binary_to_bcd #(
+    .LENGTH(lenghtOut)
+    ) bcd_inst (
+        .binary_value(magnitude),
+        .hundreds(bcd_hundreds),
+        .tens(bcd_tens),
+        .ones(bcd_ones)
     );
 
 
@@ -119,9 +129,9 @@ module ALU_Display #(
 
         if (isArith) begin
             // display digits in decimal
-            digit2 = magnitude / 100;
-            digit1 = (magnitude % 100) / 10;
-            digit0 = magnitude % 10;
+            digit2 = bcd_hundreds;
+            digit1 = bcd_tens;
+            digit0 = bcd_ones;
         end else begin
             // display digits in hex
             digit2 = 4'd0;
