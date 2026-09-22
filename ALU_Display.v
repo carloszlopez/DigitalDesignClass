@@ -1,15 +1,14 @@
-// ESPECIFICACIONES 5
-// El modelo de mayor jerarquía debe llamarse ALU_Display, debe ser un 
-// modelo Verilog estructurado, donde instancies los bloques que lo componen, 
-// por ejemplo, ALU, registros, multiplexores y módulos del display. 
-// Cada módulo instanciado debe estar identificado por una etiqueta.
+////////////////////////////////////////////////////////////////////////////////
+// Company: ITESO 
+// Engineer: Carlos Zepeda 
+// Description: This module describes an ALU and display used represent the 
+//              results
+////////////////////////////////////////////////////////////////////////////////
 module ALU_Display #(
-    // ESPECIFICACIONES 8 
-    // Para la implementación en la tarjeta DE10-Standard, los operandos 
-    // de entrada se deben definir en 5 bits y el resultado de la 
-    // operación de multiplicación se debe truncar a 8 bits. 
-    parameter len_in = 5,
-    parameter len_out = 8
+    // a and b lenght
+    parameter lenghtIn = 5,
+    // number displayed lenght
+    parameter lenghtOut = 8
 )(
     // inputs
     input [9:0] SW,
@@ -17,28 +16,46 @@ module ALU_Display #(
     input CLOCK_50,
     
     // outputs
-    output [6:0] HEX0, HEX1, HEX2
+    output [6:0] HEX0, HEX1, HEX2, HEX3
 );
-    wire [len_out-1:0] res_reg_out;
-    wire sel,enable, reset;
-    wire [3:0] digit0, digit1, digit2;
-    
-    // ESPECIFICACIONES 3
-    // Las entradas y salida de la ALU deben estar registradas, 
-    // los puertos no se conectan directamente a la ALU, sino que primero 
-    // se hacen pasar por un registro.
-    reg [len_in-1:0] a_reg, b_reg;
-    reg [3:0] ctrl_reg;
-    wire [2*len_in-1:0] res_reg;
-    wire carry_reg, overflow_reg, neg_reg, zero_reg;
+    // Values used to represent sign in display
+    localparam [6:0] SIGN_ON = 7'b0111111;
+    localparam [6:0] SIGN_OFF = 7'b1111111;
 
-    // modules inst
-    ALU #(.len(len_in)) alu_inst (
-        // inputs
-        .a(a_reg), .b(b_reg), .ctrl(ctrl_reg),
-        // outputs
-        .res(res_reg), .carry(carry_reg), .overflow(overflow_reg), 
-        .neg(neg_reg), .zero(zero_reg)
+    // control inputs
+    wire sel, enable, reset;
+    assign sel = SW[5];
+    assign enable = ~KEY[0];
+    assign reset = ~KEY[1];
+    
+    // alu inputs
+    reg [lenghtIn-1:0] aluA, aluB;
+    reg [3:0] aluCtrl;
+    wire [2*lenghtIn-1:0] aluRes;
+    wire aluCarry, aluOverflow, aluNeg, aluZero;
+
+    // working registers
+    reg [lenghtOut-1:0] wRes;
+    reg [3:0] wCtrl;
+
+    // digits
+    reg [3:0] digit0, digit1, digit2;
+
+    // display sign if negative and aritmetic operation
+    wire isArith, isNeg; 
+    wire [lenghtOut-1:0] magnitude;
+    assign isArith = wCtrl <= 4'd3;
+    assign isNeg = wRes[lenghtOut-1];
+    assign magnitude = isNeg ? (~wRes + 1'b1) : wRes;
+    assign HEX3 = (isNeg & isArith) ? SIGN_ON : SIGN_OFF;
+
+    // module instances
+    ALU #(.len(lenghtIn)) alu_inst (
+    // inputs
+    .a(aluA), .b(aluB), .ctrl(aluCtrl),
+    // outputs
+    .res(aluRes), .carry(aluCarry), .overflow(aluOverflow), 
+    .neg(aluNeg), .zero(aluZero)
     );
 
     display_7_seg display_digit0 (
@@ -62,42 +79,51 @@ module ALU_Display #(
         .HEX0(HEX2)
     );
 
-    // get control signals
-    assign sel = SW[5];
-    assign enable = ~KEY[0];
-    assign reset = ~KEY[2];
 
-    // get BCD value from res
-    assign res_reg_out = res_reg[len_out-1:0];
-    assign digit2 = res_reg_out / 100;
-    assign digit1 = (res_reg_out % 100) / 10;
-    assign digit0 = res_reg_out % 10;
-
+    // save logic
     always @(posedge CLOCK_50) begin
-        // ESPECIFICACIONES 9
-        // El diseño de mayor jerarquía debe contar con señales de clk, rst, 
-        // y enable. Esta última señal es la que habilita el almacenamiento 
-        // de los datos de entrada y resultado. Debido a que el numero de 
-        // switches y push-buttons es limitado en la tarjeta DE10-Standard, 
-        // propón una idea creativa, efectiva y funcional para el usuario, para 
-        // manejar las señales de control, rst y enable. 
         if (reset) begin
-            // set a and b default value
-            a_reg = 0;
-            b_reg = 0;
-            // Set unkown operation for ALU module
-            ctrl_reg = 10;
+            // reset alu inputs
+            aluA    <= 0;
+            aluB    <= 0;
+            aluCtrl  <= 4'd10; // Unkown operation
+            
+            // reset working registers
+            wRes    <= 0;
+            wCtrl   <= 4'd10; // Unkown operation
 
+        end else if (enable) begin
+                // Set alu inputs
+                if (sel) begin
+                    aluA <= SW[lenghtIn-1:0];
+                end else begin
+                    aluB <= SW[lenghtIn-1:0];
+                end
+                aluCtrl <= SW[9:6];
+                
+                // Update working registers
+                wRes    <= aluRes[lenghtOut-1:0];
+                wCtrl   <= aluCtrl;
+        end
+    end
+    
+    // display logic
+    always @ * begin
+        //  default values displayed
+        digit0 = 4'd0;
+        digit1 = 4'd0;
+        digit2 = 4'd0;
+
+        if (isArith) begin
+            // display digits in decimal
+            digit2 = magnitude / 100;
+            digit1 = (magnitude % 100) / 10;
+            digit0 = magnitude % 10;
         end else begin
-                // Set a or b value
-                if (enable & sel) begin
-                    a_reg <= SW[len_in-1:0];
-                end
-                if (enable & ~sel) begin
-                    b_reg <= SW[len_in-1:0];
-                end
-                // Set ctrl value
-                ctrl_reg <= SW[9:6];
+            // display digits in hex
+            digit2 = 4'd0;
+            digit1 = wRes[7:4];
+            digit0 = wRes[3:0];
         end
     end
 endmodule

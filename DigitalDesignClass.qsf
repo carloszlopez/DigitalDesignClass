@@ -101,13 +101,13 @@ set_location_assignment PIN_Y17 -to HEX2[3]
 set_location_assignment PIN_Y18 -to HEX2[4]
 set_location_assignment PIN_AF18 -to HEX2[5]
 set_location_assignment PIN_W16 -to HEX2[6]
-set_location_assignment PIN_Y19 -to HEX3[0] -disable
-set_location_assignment PIN_W19 -to HEX3[1] -disable
-set_location_assignment PIN_AD19 -to HEX3[2] -disable
-set_location_assignment PIN_AA20 -to HEX3[3] -disable
-set_location_assignment PIN_AC20 -to HEX3[4] -disable
-set_location_assignment PIN_AA19 -to HEX3[5] -disable
-set_location_assignment PIN_AD20 -to HEX3[6] -disable
+set_location_assignment PIN_Y19 -to HEX3[0]
+set_location_assignment PIN_W19 -to HEX3[1]
+set_location_assignment PIN_AD19 -to HEX3[2]
+set_location_assignment PIN_AA20 -to HEX3[3]
+set_location_assignment PIN_AC20 -to HEX3[4]
+set_location_assignment PIN_AA19 -to HEX3[5]
+set_location_assignment PIN_AD20 -to HEX3[6]
 set_location_assignment PIN_AD21 -to HEX4[0] -disable
 set_location_assignment PIN_AG22 -to HEX4[1] -disable
 set_location_assignment PIN_AE22 -to HEX4[2] -disable
@@ -160,9 +160,9 @@ set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX2[0]
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX2[2]
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX2[4]
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX2[6]
-set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX3[1] -disable
-set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX3[3] -disable
-set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX3[5] -disable
+set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX3[1]
+set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX3[3]
+set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX3[5]
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX4[0] -disable
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX4[2] -disable
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX4[4] -disable
@@ -176,10 +176,10 @@ set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX1[6]
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX2[1]
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX2[3]
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX2[5]
-set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX3[0] -disable
-set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX3[2] -disable
-set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX3[4] -disable
-set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX3[6] -disable
+set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX3[0]
+set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX3[2]
+set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX3[4]
+set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX3[6]
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX4[1] -disable
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX4[3] -disable
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX4[5] -disable
