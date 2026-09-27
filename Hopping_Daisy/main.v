@@ -18,6 +18,8 @@ module main (
     wire [7:0] blue_game;
     wire [9:0] pixel_x;
     wire [9:0] pixel_y;
+    wire       frame_tick;
+    wire [9:0] daisy_y;
 
     // SW[1:0]: 00 = black, 01 = red, 10 = green, 11 = blue.
     // assign red_game   = (SW[1:0] == 2'b01) ? 8'hFF : 8'h00;
@@ -41,15 +43,26 @@ module main (
         .sync_n  (VGA_SYNC_N),
         .blank_n (VGA_BLANK_N),
         .pixel_x (pixel_x),
-        .pixel_y (pixel_y)
+        .pixel_y (pixel_y),
+        .frame_tick(frame_tick)
     );
 
     // Render instance
     render render_inst (
         .pixel_x(pixel_x),
         .pixel_y(pixel_y),
+        .daisy_y (daisy_y),
         .red(red_game),
         .green(green_game),
         .blue(blue_game)
+    );
+
+    // Game instance
+    game game_inst (
+    .clk_in     (CLOCK_50),
+    .reset_n    (KEY[0]),
+    .jump_n     (KEY[3]),
+    .frame_tick (frame_tick),
+    .daisy_y    (daisy_y)
     );
 endmodule

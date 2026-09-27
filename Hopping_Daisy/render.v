@@ -1,6 +1,8 @@
 module render (
     input  wire [9:0] pixel_x,
     input  wire [9:0] pixel_y,
+    input  wire [9:0] daisy_y,
+    
     output reg  [7:0] red,
     output reg  [7:0] green,
     output reg  [7:0] blue
@@ -20,8 +22,8 @@ module render (
         end
 
         // White placeholder for Daisy: x = 80..119, y = 360..399.
-        if ((pixel_x >= 10'd80)  && (pixel_x < 10'd120) &&
-            (pixel_y >= 10'd360) && (pixel_y < 10'd400)) begin
+        if ((pixel_x >= 10'd80) && (pixel_x < 10'd120) &&
+            (pixel_y >= daisy_y) && (pixel_y < daisy_y + 10'd40)) begin
             red   = 8'hFF;
             green = 8'hFF;
             blue  = 8'hFF;

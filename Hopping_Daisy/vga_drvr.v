@@ -14,7 +14,8 @@ module vga_drvr (
     output wire       sync_n,      // VGA DAC sync
     output wire       blank_n,     // VGA DAC blanking
     output wire [9:0] pixel_x,
-    output wire [9:0] pixel_y
+    output wire [9:0] pixel_y,
+    output wire       frame_tick
 );
 
     // Timing for 640x480 video with a 25 MHz pixel clock.
@@ -84,5 +85,9 @@ module vga_drvr (
     assign red   = visible ? red_in   : 8'd0;
     assign green = visible ? green_in : 8'd0;
     assign blue  = visible ? blue_in  : 8'd0;
+
+    // One 50 MHz clock cycle at the end of each video frame.
+    assign frame_tick = clk && (h_count == H_TOTAL - 1) 
+                        && (v_count == V_TOTAL - 1);
 
 endmodule

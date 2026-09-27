@@ -251,6 +251,7 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_BLANK_N
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_HS
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_VS
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_SYNC_N
+set_global_assignment -name VERILOG_FILE /Hopping_Daisy/game.v
 set_global_assignment -name VERILOG_FILE /Hopping_Daisy/render.v
 set_global_assignment -name VERILOG_FILE /Hopping_Daisy/vga_drvr.v
 set_global_assignment -name VERILOG_FILE /Hopping_Daisy/main.v
