@@ -20,9 +20,9 @@ module main (
     wire [9:0] pixel_y;
 
     // SW[1:0]: 00 = black, 01 = red, 10 = green, 11 = blue.
-    assign red_game   = (SW[1:0] == 2'b01) ? 8'hFF : 8'h00;
-    assign green_game = (SW[1:0] == 2'b10) ? 8'hFF : 8'h00;
-    assign blue_game  = (SW[1:0] == 2'b11) ? 8'hFF : 8'h00;
+    // assign red_game   = (SW[1:0] == 2'b01) ? 8'hFF : 8'h00;
+    // assign green_game = (SW[1:0] == 2'b10) ? 8'hFF : 8'h00;
+    // assign blue_game  = (SW[1:0] == 2'b11) ? 8'hFF : 8'h00;
 
     // VGA driver instance.
     vga_drvr vga_drvr_inst (
@@ -44,4 +44,12 @@ module main (
         .pixel_y (pixel_y)
     );
 
+    // Render instance
+    render render_inst (
+        .pixel_x(pixel_x),
+        .pixel_y(pixel_y),
+        .red(red_game),
+        .green(green_game),
+        .blue(blue_game)
+    );
 endmodule
