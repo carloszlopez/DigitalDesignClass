@@ -23,6 +23,7 @@ module main (
     wire       playing;
     wire [9:0] obstacle_x;
     wire [4:0] ground_offset;
+    wire       game_over;
 
     // SW[1:0]: 00 = black, 01 = red, 10 = green, 11 = blue.
     // assign red_game   = (SW[1:0] == 2'b01) ? 8'hFF : 8'h00;
@@ -69,6 +70,7 @@ module main (
         .start_n       (KEY[1]),
         .jump_n        (KEY[3]),
         .frame_tick    (frame_tick),
+        .game_over    (game_over),
         .playing       (playing),
         .daisy_y       (daisy_y),
         .obstacle_x    (obstacle_x),
