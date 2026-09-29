@@ -23,7 +23,7 @@ module main (
     wire       playing;
     wire [9:0] obstacle_x;
     wire [4:0] ground_offset;
-    wire       game_over;
+    wire [15:0]score_bcd;
 
     // SW[1:0]: 00 = black, 01 = red, 10 = green, 11 = blue.
     // assign red_game   = (SW[1:0] == 2'b01) ? 8'hFF : 8'h00;
@@ -58,6 +58,7 @@ module main (
         .daisy_y       (daisy_y),
         .obstacle_x    (obstacle_x),
         .ground_offset (ground_offset),
+        .score_bcd     (score_bcd),
         .red           (red_game),
         .green         (green_game),
         .blue          (blue_game)
@@ -74,6 +75,7 @@ module main (
         .playing       (playing),
         .daisy_y       (daisy_y),
         .obstacle_x    (obstacle_x),
-        .ground_offset (ground_offset)
+        .ground_offset (ground_offset),
+        .score_bcd     (score_bcd)
     );
 endmodule

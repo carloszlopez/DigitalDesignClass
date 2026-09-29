@@ -9,7 +9,8 @@ module game (
     output reg        game_over,
     output reg  [9:0] daisy_y,
     output reg  [9:0] obstacle_x,
-    output reg  [4:0] ground_offset
+    output reg  [4:0] ground_offset,
+    output reg  [15:0] score_bcd
 );
 
     localparam [9:0] DAISY_GROUND_Y = 10'd360;
@@ -23,6 +24,7 @@ module game (
 
     reg       jumping;
     reg [4:0] jump_frame;
+    reg obstacle_scored;
 
     wire start_pressed = start_previous && !start_sync;
     wire jump_pressed  = jump_previous  && !jump_sync;
@@ -35,6 +37,9 @@ module game (
         (10'd120 > obstacle_x) &&
         (daisy_y < 10'd400) &&
         (daisy_y + 10'd40 > 10'd370);
+
+    wire obstacle_passed = !obstacle_scored &&
+                           (obstacle_x + 10'd20 <= 10'd80);
 
     // Synchronize the buttons to the 50 MHz clock.
     always @(posedge clk_in or negedge reset_n) begin
@@ -77,6 +82,8 @@ module game (
             ground_offset <= 5'd0;
             jumping       <= 1'b0;
             jump_frame    <= 5'd0;
+            score_bcd       <= 16'h0000;
+            obstacle_scored <= 1'b0;
         end else if (start_pressed && !playing) begin
             // Start a new game, including after a collision.
             playing       <= 1'b1;
@@ -86,20 +93,50 @@ module game (
             ground_offset <= 5'd0;
             jumping       <= 1'b0;
             jump_frame    <= 5'd0;
+            score_bcd       <= 16'h0000;
+            obstacle_scored <= 1'b0;
         end else if (frame_tick && playing) begin
             if (collision) begin
                 playing   <= 1'b0;
                 game_over <= 1'b1;
             end else begin
+                // Count each obstacle once, after it clears Daisy.
+                if (obstacle_passed) begin
+                    obstacle_scored <= 1'b1;
+
+                    if (score_bcd != 16'h9999) begin
+                        if (score_bcd[3:0] != 4'd9) begin
+                            score_bcd[3:0] <= score_bcd[3:0] + 4'd1;
+                        end else begin
+                            score_bcd[3:0] <= 4'd0;
+
+                            if (score_bcd[7:4] != 4'd9) begin
+                                score_bcd[7:4] <= score_bcd[7:4] + 4'd1;
+                            end else begin
+                                score_bcd[7:4] <= 4'd0;
+
+                                if (score_bcd[11:8] != 4'd9) begin
+                                    score_bcd[11:8] <= score_bcd[11:8] + 4'd1;
+                                end else begin
+                                    score_bcd[11:8] <= 4'd0;
+                                    score_bcd[15:12] <= score_bcd[15:12] + 4'd1;
+                                end
+                            end
+                        end
+                    end
+                end
+
                 // Move the obstacle from right to left.
-                if (obstacle_x <= OBSTACLE_SPEED)
+                if (obstacle_x <= OBSTACLE_SPEED) begin
                     obstacle_x <= 10'd640;
-                else
+                    obstacle_scored <= 1'b0;
+                end else begin
                     obstacle_x <= obstacle_x - OBSTACLE_SPEED;
+                end
 
                 ground_offset <= ground_offset + 5'd4;
 
-                // Move up for 14 frames, then down for 14 frames.
+                // Rise 84 pixels over 14 frames, then descend.
                 if (!jumping) begin
                     if (jump_pending) begin
                         jumping    <= 1'b1;
