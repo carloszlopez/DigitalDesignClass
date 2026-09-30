@@ -1,0 +1,51 @@
+////////////////////////////////////////////////////////////////////////////////
+// Assignments
+////////////////////////////////////////////////////////////////////////////////
+
+    // bloqueante
+    always @(posedge clk) begin
+        a = 1;
+        b = a;
+        c = b;
+    end
+
+    // non-bloqueante
+    always @(posedge clk) begin
+    end
+        a <= 1;
+        b <= a;
+        c <= b;
+
+////////////////////////////////////////////////////////////////////////////////
+// Resets
+////////////////////////////////////////////////////////////////////////////////
+    // sync reset
+    always @(posedge clk) begin
+        if (reset) begin
+            // x action
+        end
+    end
+
+    // async reset
+    always @(posedge clk or posedge reset) begin
+    end
+
+////////////////////////////////////////////////////////////////////////////////
+// Enable
+////////////////////////////////////////////////////////////////////////////////
+    // enable
+    always @(posedge clk) begin
+        if (enable) begin
+            q <= d;
+        end
+    end
+
+    // reset & enable
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            q <= 0;
+        end
+        else if (enable) begin
+            q <= d;
+        end
+    end
