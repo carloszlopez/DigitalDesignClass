@@ -1,93 +1,133 @@
+`include "common_defines.vh"
+
 module vga_drvr (
-    input  wire       clk_in,      // 50 MHz input clock
-    input  wire       reset_n,     // Active-low reset
+    input  wire clk_in, // 50 MHz input clock
+    input  wire reset_n, // Active-low reset
     input  wire [7:0] red_in,
     input  wire [7:0] green_in,
     input  wire [7:0] blue_in,
 
-    output wire [7:0] red,
-    output wire [7:0] green,
-    output wire [7:0] blue,
-    output reg        clk,         // 25 MHz VGA pixel clock
-    output wire       hsync,       // Horizontal sync
-    output wire       vsync,       // Vertical sync
-    output wire       sync_n,      // VGA DAC sync
-    output wire       blank_n,     // VGA DAC blanking
-    output wire [9:0] pixel_x,
-    output wire [9:0] pixel_y,
-    output wire       frame_tick
+    output reg [7:0] red,
+    output reg [7:0] green,
+    output reg [7:0] blue,
+    output reg clk, // 25 MHz VGA pixel clock
+    output reg hsync, // Horizontal sync
+    output reg vsync, // Vertical sync
+    output wire sync_n, // VGA DAC sync
+    output reg blank_n, // VGA DAC blanking
+    output reg [9:0] pixel_x,
+    output reg [9:0] pixel_y,
+    output reg frame_tick
 );
+    // Combinational variables
+    reg clk_comb;
 
-    // Timing for 640x480 video with a 25 MHz pixel clock.
-    localparam H_VISIBLE = 640;
-    localparam H_FRONT   = 16;
-    localparam H_SYNC    = 96;
-    localparam H_BACK    = 48;
-    localparam H_TOTAL   = H_VISIBLE + H_FRONT + H_SYNC + H_BACK;
+    reg [9:0] pixel_x_comb;
+    reg [9:0] pixel_y_comb;
 
-    localparam V_VISIBLE = 480;
-    localparam V_FRONT   = 10;
-    localparam V_SYNC    = 2;
-    localparam V_BACK    = 33;
-    localparam V_TOTAL   = V_VISIBLE + V_FRONT + V_SYNC + V_BACK;
+    reg blank_n_comb;
+    reg hsync_comb;
+    reg vsync_comb;
+    reg [7:0] red_comb;
+    reg [7:0] green_comb;
+    reg [7:0] blue_comb;
 
-    localparam H_SYNC_START = H_VISIBLE + H_FRONT;
-    localparam H_SYNC_END   = H_SYNC_START + H_SYNC;
+    reg frame_tick_comb;
 
-    localparam V_SYNC_START = V_VISIBLE + V_FRONT;
-    localparam V_SYNC_END   = V_SYNC_START + V_SYNC;
-
-    reg [9:0] h_count;
-    reg [9:0] v_count;
-
-    // Toggle on every 50 MHz cycle to generate a 25 MHz pixel clock.
-    always @(posedge clk_in or negedge reset_n) begin
+    // Disable sync_n
+    assign sync_n  = 1'b0;
+    
+    always @(*) begin
+        // Reset
         if (!reset_n) begin
-            clk     <= 1'b0;
-            h_count <= 10'd0;
-            v_count <= 10'd0;
+            clk_comb = 1'b0;
+
+            pixel_x_comb = 10'd0;
+            pixel_y_comb = 10'd0;
+
+            blank_n_comb = 1'b0;
+            hsync_comb = 1'b1;
+            vsync_comb = 1'b1;
+            red_comb = 8'd0;
+            green_comb = 8'd0;
+            blue_comb = 8'd0;
+
+            frame_tick_comb = 1'b0;
+
         end else begin
-            clk <= ~clk;
 
-            // Advance one pixel when the pixel clock falls.
+            // Pixel clock divider: 50 MHz to 25 MHz
+            clk_comb = ~clk;
+
+            // Hold the current values by default
+            pixel_x_comb = pixel_x;
+            pixel_y_comb = pixel_y;
+
+            blank_n_comb = blank_n;
+            hsync_comb = hsync;
+            vsync_comb = vsync;
+            red_comb = red;
+            green_comb = green;
+            blue_comb = blue;
+
+            // Clear frame tick
+            frame_tick_comb = 1'b0;
+
+            // Pixel clock enable
             if (clk) begin
-                if (h_count == H_TOTAL - 1) begin
-                    h_count <= 10'd0;
 
-                    if (v_count == V_TOTAL - 1)
-                        v_count <= 10'd0;
-                    else
-                        v_count <= v_count + 10'd1;
+                // Pixel counters: pixel_x (0 to 799) and pixel_y (0 to 524)
+                // Advanced one pixel
+                if (pixel_x == `H_TOTAL - 1) begin
+                    // Reset horizontal counter
+                    pixel_x_comb = 10'd0;
+                    if (pixel_y == `V_TOTAL - 1) begin
+                        // Reset vertical counter
+                        pixel_y_comb = 10'd0; 
+                    end else begin
+                         // Advance vertically
+                        pixel_y_comb = pixel_y + 10'd1;
+                    end
                 end else begin
-                    h_count <= h_count + 10'd1;
+                    // Advance horizontally
+                    pixel_x_comb = pixel_x + 10'd1;
                 end
+
+                // VGA outputs
+                // !blank if pixel visible
+                blank_n_comb = (pixel_x < `H_VISIBLE) && 
+										 (pixel_y < `V_VISIBLE);
+                // sync if pixel is between sync start and end
+                hsync_comb = ~((pixel_x >= `H_SYNC_START) && 
+                             (pixel_x <  `H_SYNC_END));
+                vsync_comb = ~((pixel_y >= `V_SYNC_START) && 
+                             (pixel_y <  `V_SYNC_END));
+                // RGB if pixel visible
+                red_comb = blank_n_comb ? red_in : 8'd0;
+                green_comb = blank_n_comb ? green_in : 8'd0;
+                blue_comb = blank_n_comb ? blue_in : 8'd0;
+
+                // One tick of 50 MHz clock cycle at the end of each video frame
+                frame_tick_comb = (pixel_x == `H_TOTAL - 1) && 
+                                  (pixel_y == `V_TOTAL - 1);
             end
         end
     end
+    
+    // Register outputs
+    always @ (posedge clk_in) begin
+        clk <= clk_comb;
 
-    wire visible = (h_count < H_VISIBLE) &&
-                   (v_count < V_VISIBLE);
+        pixel_x <= pixel_x_comb;
+        pixel_y <= pixel_y_comb;
 
-    assign pixel_x = h_count;
-    assign pixel_y = v_count;
+        blank_n <= blank_n_comb;
+        vsync   <= vsync_comb;
+        hsync   <= hsync_comb;
+        red     <= red_comb;
+        green   <= green_comb;
+        blue    <= blue_comb;
 
-    // Sync pulses are active low.
-    assign hsync = ~((h_count >= H_SYNC_START) &&
-                     (h_count <  H_SYNC_END));
-
-    assign vsync = ~((v_count >= V_SYNC_START) &&
-                     (v_count <  V_SYNC_END));
-
-    assign blank_n = visible;
-    assign sync_n  = 1'b0;
-
-    // Output black outside the visible area.
-    assign red   = visible ? red_in   : 8'd0;
-    assign green = visible ? green_in : 8'd0;
-    assign blue  = visible ? blue_in  : 8'd0;
-
-    // One 50 MHz clock cycle at the end of each video frame.
-    assign frame_tick = clk && (h_count == H_TOTAL - 1) 
-                        && (v_count == V_TOTAL - 1);
-
+        frame_tick <= frame_tick_comb;        
+    end
 endmodule
