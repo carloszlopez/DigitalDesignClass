@@ -18,4 +18,19 @@
 `define V_SYNC_START (`V_VISIBLE + `V_FRONT)
 `define V_SYNC_END (`V_SYNC_START + `V_SYNC)
 
+// Ground
+`define GROUND_V_START  (10'd400)
+
+// Obstacle
+`define OBSTACLE_H_SIZE     (10'd20)
+`define OBSTACLE_V_START    (10'd370)
+`define OBSTACLE_V_SIZE     (10'd30)
+`define OBSTACLE_V_END      (`OBSTACLE_V_START + `OBSTACLE_V_SIZE)
+
+// Daisy
+`define DAISY_H_START    (10'd80)
+`define DAISY_H_SIZE     (10'd40)
+`define DAISY_H_END      (`DAISY_H_START + `DAISY_H_SIZE)
+`define DAISY_V_SIZE     (10'd40)
+
 `endif

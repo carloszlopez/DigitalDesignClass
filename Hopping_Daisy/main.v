@@ -21,6 +21,7 @@ module main (
     wire       frame_tick;
     wire [9:0] daisy_y;
     wire       playing;
+    wire       game_over;
     wire [9:0] obstacle_x;
     wire [4:0] ground_offset;
     wire [15:0]score_bcd;
@@ -59,6 +60,8 @@ module main (
         .obstacle_x    (obstacle_x),
         .ground_offset (ground_offset),
         .score_bcd     (score_bcd),
+        .clk_in        (CLOCK_50),
+        .reset_n       (KEY[0]),
         .red           (red_game),
         .green         (green_game),
         .blue          (blue_game)
