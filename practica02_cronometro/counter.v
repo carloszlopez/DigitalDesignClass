@@ -1,6 +1,6 @@
 module counter #(
     parameter SIZE = 19,
-    parameter MAX_CUT = 500000
+    parameter MAX_CUT = 499999
 )(
     input wire clk,
     input wire reset_n,
@@ -14,26 +14,15 @@ module counter #(
     reg max_hit_comb;
 
     always @(*) begin
-        // reset values
-        cnt_comb = 0;
-        max_hit_comb = 1'b0;
-
-        if (reset_n) begin
-            // hold values
+        if (!reset_n) begin
+            cnt_comb = {SIZE{1'b0}};
+            max_hit_comb = 1'b0;
+        end else if (enable) begin
+            max_hit_comb = (cnt == MAX_CUT);
+            cnt_comb = max_hit_comb ? {SIZE{1'b0}} : cnt + 1'b1;
+        end else begin
+            max_hit_comb = 0;
             cnt_comb = cnt;
-            max_hit_comb = max_hit;
-
-            if (enable) begin
-                // No max hit, add 1
-                cnt_comb = cnt + 1;
-                max_hit_comb = 1'b0;
-
-                // Max hit, reset counter
-                if (cnt == MAX_CUT) begin
-                    cnt_comb = 0;
-                    max_hit_comb = 1'b1;
-                end
-            end
         end
     end
 
