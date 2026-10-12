@@ -6,31 +6,43 @@ module counter #(
     input wire clk,
     input wire reset,
     input wire enable,
+    input wire load,
+    input wire [SIZE-1:0] cnt_in,
     
     output reg[SIZE-1:0] cnt,
     output wire max_hit
 );
+
+
+    // /////////////////////////////////////////////////////////////////////////
+    // cnt_in if load else use cnt
+    // /////////////////////////////////////////////////////////////////////////
+    wire [SIZE-1:0] counter = load ? cnt_in : cnt;
+
     // /////////////////////////////////////////////////////////////////////////
     // counter
     // /////////////////////////////////////////////////////////////////////////
     // decrement if COUNT_DOWN else increment
-    wire [SIZE-1:0] nxt_cmb = COUNT_DOWN ? cnt - 1'b1 : cnt + 1'b1;
+    wire [SIZE-1:0] nxt_cnt = COUNT_DOWN ? counter - 1'b1 : counter + 1'b1;
     // reset to MAX_CUT if COUNT_DOWN else to 0
     wire [SIZE-1:0] wrap_value = COUNT_DOWN ? MAX_CUT : {SIZE{1'b0}};
 
     // /////////////////////////////////////////////////////////////////////////
-    // max hit or zero hit if COUNT_DOWN
+    // zero hit if COUNT_DOWN else max hit
     // /////////////////////////////////////////////////////////////////////////
-    assign max_hit = enable && (COUNT_DOWN ? (cnt == 0) : (cnt == MAX_CUT));
+    assign max_hit = !reset && enable && 
+                     (COUNT_DOWN ? (counter == 0) : (counter == MAX_CUT));
 
     // /////////////////////////////////////////////////////////////////////////
     // register counter value
     // /////////////////////////////////////////////////////////////////////////
     always @(posedge clk) begin
-        if (reset || max_hit) begin
+        if (reset) begin
             cnt <= wrap_value;
         end else if (enable) begin
-            cnt <= nxt_cmb;
+            cnt <= max_hit ? wrap_value : nxt_cnt;
+        end else if (load) begin
+            cnt <= cnt_in;
         end
     end
 endmodule

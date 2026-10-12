@@ -288,7 +288,7 @@
     </mxGraphModel>
   </diagram>
   <diagram name="stopwatch" id="2cS4MA2Dh84U6k0KMsJd">
-    <mxGraphModel dx="1377" dy="2141" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="640" pageHeight="480" math="0" shadow="0">
+    <mxGraphModel dx="537" dy="1649" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="640" pageHeight="480" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -1899,7 +1899,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="XFBL9PjEUMpEbS2RHCaC" name="counter">
-    <mxGraphModel dx="1364" dy="424" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="640" pageHeight="480" math="0" shadow="0">
+    <mxGraphModel dx="2126" dy="871" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="640" pageHeight="480" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
