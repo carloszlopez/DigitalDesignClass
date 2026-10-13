@@ -4,7 +4,8 @@ module timer (
                  units_of_min_in, tens_of_min_in,
 
     output [3:0] hundredths_of_sec, tenths_of_sec, units_of_sec, tens_of_sec,
-                 units_of_min, tens_of_min
+                 units_of_min, tens_of_min,
+    output finished
 );
     // ////////////////////////////////////////////////////////////////////////
     // timer counters MM:SS.cc (Max 59:59:99) (start as 02:13.99)
@@ -62,6 +63,6 @@ module timer (
         .load(load),
         .cnt_in(tens_of_min_in),
         .cnt(tens_of_min),
-        .max_hit() // unconnected
+        .max_hit(finished)
     );
 endmodule

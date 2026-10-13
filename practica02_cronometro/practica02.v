@@ -23,7 +23,7 @@ module practica02 (
     input wire [9:0] SW,
     input wire CLOCK_50,
 
-    output wire [6:0] HEX0, HEX1, HEX2, HEX3, HEX4, HEX5
+    output reg [6:0] HEX0, HEX1, HEX2, HEX3, HEX4, HEX5
 );
     // /////////////////////////////////////////////////////////////////////////
     // keys
@@ -51,7 +51,7 @@ module practica02 (
             system_mode <= `SYSTEM_MODE_RESET;
             fnc_selected <= 0;
 
-        end else begin
+        end else begin            
             case (system_mode)
                 `SYSTEM_MODE_RESET: begin
                     fnc_selected <= 0;
@@ -75,6 +75,10 @@ module practica02 (
                     // pause detected
                     end else if (key_pressed[`KEY_START_PAUSE]) begin
                         system_mode <= `SYSTEM_MODE_PAUSED;
+
+                    // finished detected
+                    end else if (timer_finished | stopwatch_finished) begin
+                        system_mode <= `SYSTEM_MODE_PAUSED;
                     end
                 end
                 
@@ -82,6 +86,7 @@ module practica02 (
                     // selected function changed
                     if (fnc_selected != SW[`SW_SELECTOR]) begin
                         system_mode <= `SYSTEM_MODE_RESET;
+
                     // start detected
                     end else if (key_pressed[`KEY_START_PAUSE]) begin
                         system_mode <= `SYSTEM_MODE_STARTED;
@@ -167,6 +172,7 @@ module practica02 (
     wire [3:0] stopwatch_hundredths_of_sec, stopwatch_tenths_of_sec,
                stopwatch_units_of_sec, stopwatch_tens_of_sec, 
                stopwatch_units_of_min, stopwatch_tens_of_min;
+    wire stopwatch_finished;
 
     stopwatch stopwatch_inst (
         // inputs
@@ -186,12 +192,14 @@ module practica02 (
         .units_of_sec(stopwatch_units_of_sec), 
         .tens_of_sec(stopwatch_tens_of_sec),
         .units_of_min(stopwatch_units_of_min), 
-        .tens_of_min(stopwatch_tens_of_min)
+        .tens_of_min(stopwatch_tens_of_min),
+        .finished(stopwatch_finished)
     );
     
     wire [3:0] timer_hundredths_of_sec, timer_tenths_of_sec,
                timer_units_of_sec, timer_tens_of_sec,
                timer_units_of_min, timer_tens_of_min;
+    wire timer_finished;
 
     timer timer_inst (
         // inputs
@@ -211,7 +219,8 @@ module practica02 (
         .units_of_sec(timer_units_of_sec), 
         .tens_of_sec(timer_tens_of_sec),
         .units_of_min(timer_units_of_min), 
-        .tens_of_min(timer_tens_of_min)
+        .tens_of_min(timer_tens_of_min),
+        .finished(timer_finished)
     );
 
     // /////////////////////////////////////////////////////////////////////////
@@ -221,7 +230,7 @@ module practica02 (
         units_of_min, tens_of_min;
 
     always @(*) begin
-        case (system_mode)        
+        case (system_mode)
             // Use functions outputs for display
             `SYSTEM_MODE_STARTED,`SYSTEM_MODE_PAUSED: begin
                 hundredths_of_sec = fnc_selected ? 
@@ -250,13 +259,15 @@ module practica02 (
         endcase
     end
 
+    wire [6:0] hex0_value, hex1_value, hex2_value, hex3_value, hex4_value, hex5_value;
+
     display_7_seg display_inst0 (
         // inputs
         .SW(hundredths_of_sec), 
         .reset((system_mode == `SYSTEM_MODE_RESET)),
         
         // outputs
-        .HEX0(HEX0));
+        .HEX0(hex0_value));
 
     display_7_seg display_inst1 (
         // inputs
@@ -264,7 +275,7 @@ module practica02 (
         .reset((system_mode == `SYSTEM_MODE_RESET)),
         
         // outputs
-        .HEX0(HEX1));
+        .HEX0(hex1_value));
 
     display_7_seg display_inst2 (
         // inputs
@@ -272,7 +283,7 @@ module practica02 (
         .reset((system_mode == `SYSTEM_MODE_RESET)),
         
         // outputs
-        .HEX0(HEX2));
+        .HEX0(hex2_value));
 
     display_7_seg display_inst3 (
         // inputs
@@ -280,7 +291,7 @@ module practica02 (
         .reset((system_mode == `SYSTEM_MODE_RESET)),
         
         // outputs
-        .HEX0(HEX3));
+        .HEX0(hex3_value));
 
     display_7_seg display_inst4 (
         // inputs
@@ -288,7 +299,7 @@ module practica02 (
         .reset((system_mode == `SYSTEM_MODE_RESET)),
         
         // outputs
-        .HEX0(HEX4));
+        .HEX0(hex4_value));
 
     display_7_seg display_inst5 (
         // inputs
@@ -296,13 +307,14 @@ module practica02 (
         .reset((system_mode == `SYSTEM_MODE_RESET)),
         
         // outputs
-        .HEX0(HEX5));
+        .HEX0(hex5_value));
 
 
     // ////////////////////////////////////////////////////////////////////////
     // 10ms counter
     // ////////////////////////////////////////////////////////////////////////
     wire tick_10ms;
+
     counter #(.SIZE(5'd19), .MAX_CUT(19'd499999), 
               .COUNT_DOWN(1'b0)) counter_inst0 (
         // inputs
@@ -316,4 +328,96 @@ module practica02 (
         .cnt(), //unconnected
         .max_hit(tick_10ms)
     );
+
+    // ////////////////////////////////////////////////////////////////////////
+    // display blink
+    // ////////////////////////////////////////////////////////////////////////
+    wire tick_250ms;
+    reg blink_signal;
+    reg finished_latched;
+
+    counter #(.SIZE(5'd24), .MAX_CUT(24'd12499999), 
+              .COUNT_DOWN(1'b0)) counter_blink (
+        // inputs
+        .clk(CLOCK_50),
+        .reset((system_mode == `SYSTEM_MODE_RESET)),
+        .enable(1'b1),
+
+        // outputs
+        .load(1'b0),
+        .cnt_in(24'd0),
+        .cnt(), //unconnected
+        .max_hit(tick_250ms)
+    );
+
+    // toggle blink_signal every tick_250ms
+    always @(posedge CLOCK_50) begin
+        
+        if (system_mode == `SYSTEM_MODE_RESET) begin
+            blink_signal <= 1'b0;
+
+        end else if (tick_250ms) begin
+            blink_signal <= ~blink_signal;
+        end
+    end
+
+    // hold finished flag
+    always @(posedge CLOCK_50) begin
+        case (system_mode)
+            `SYSTEM_MODE_STARTED: begin
+                finished_latched <= (timer_finished | stopwatch_finished);
+            end
+            `SYSTEM_MODE_PAUSED: begin
+                // hold value
+            end 
+            default:
+                finished_latched <= 1'b0;
+        endcase
+    end
+
+    always @(*) begin
+        case (system_mode)
+            // toggle selected digit and leave others steady
+            `SYSTEM_MODE_INIT: begin
+                HEX0 = (selected_digit == 0) ? 
+                 (blink_signal ? hex0_value : 7'b1111111) : hex0_value;
+                HEX1 = (selected_digit == 1) ? 
+                 (blink_signal ? hex1_value : 7'b1111111) : hex1_value;
+                HEX2 = (selected_digit == 2) ? 
+                 (blink_signal ? hex2_value : 7'b1111111) : hex2_value;
+                HEX3 = (selected_digit == 3) ? 
+                 (blink_signal ? hex3_value : 7'b1111111) : hex3_value;
+                HEX4 = (selected_digit == 4) ? 
+                 (blink_signal ? hex4_value : 7'b1111111) : hex4_value;
+                HEX5 = (selected_digit == 5) ? 
+                 (blink_signal ? hex5_value : 7'b1111111) : hex5_value;
+            end
+
+            // toggle all digits if finished
+            `SYSTEM_MODE_STARTED, `SYSTEM_MODE_PAUSED: begin
+                HEX0 = finished_latched ? 
+                 (blink_signal ? hex0_value : 7'b1111111) : hex0_value;
+                HEX1 = finished_latched ? 
+                 (blink_signal ? hex1_value : 7'b1111111) : hex1_value;
+                HEX2 = finished_latched ? 
+                 (blink_signal ? hex2_value : 7'b1111111) : hex2_value;
+                HEX3 = finished_latched ? 
+                 (blink_signal ? hex3_value : 7'b1111111) : hex3_value;
+                HEX4 = finished_latched ? 
+                 (blink_signal ? hex4_value : 7'b1111111) : hex4_value;
+                HEX5 = finished_latched ? 
+                 (blink_signal ? hex5_value : 7'b1111111) : hex5_value;
+            end
+
+            // steady digit
+            default: begin
+                HEX0 = hex0_value;
+                HEX1 = hex1_value;
+                HEX2 = hex2_value;
+                HEX3 = hex3_value;
+                HEX4 = hex4_value;
+                HEX5 = hex5_value;
+            end
+        endcase
+    end
 endmodule
