@@ -58,9 +58,11 @@ module practica02 (
     reg [3:0] hundredths_of_sec, tenths_of_sec, units_of_sec, tens_of_sec, 
             units_of_min, tens_of_min;
 
+    reg running;
+
     always @(posedge CLOCK_50) begin
         if (reset) begin
-            system_mode <= `SYSTEM_MODE_RESET;
+        system_mode <= `SYSTEM_MODE_RESET;
         
         end else begin
             // use digit as display_7_seg inputs
@@ -77,6 +79,8 @@ module practica02 (
             left_up_prev     <= left_up;
             right_down_prev  <= right_down;
 
+            running <= start_pause_pressed ? ~running : running;
+
             case (system_mode)
                 `SYSTEM_MODE_RESET: begin
                     // navigation reset
@@ -88,6 +92,8 @@ module practica02 (
                     digit[3]       = 4'd0;
                     digit[4]       = 4'd0;
                     digit[5]       = 4'd0;
+
+                    running <= 1'b0;
 
                     // next mode
                     system_mode <= `SYSTEM_MODE_INIT;
@@ -171,8 +177,8 @@ module practica02 (
     stopwatch stopwatch_inst (
         // inputs
         .clk(CLOCK_50), .reset(system_mode == `SYSTEM_MODE_RESET), 
-        .enable(system_mode == `SYSTEM_MODE_STOPWATCH), .tick_10ms(tick_10ms),
-        .load(load), 
+        .enable(running && (system_mode == `SYSTEM_MODE_STOPWATCH)), 
+        .tick_10ms(tick_10ms), .load(load), 
         .hundredths_of_sec_in(digit[0]), 
         .tenths_of_sec_in(digit[1]), 
         .units_of_sec_in(digit[2]), 
@@ -196,8 +202,8 @@ module practica02 (
     timer timer_inst (
         // inputs
         .clk(CLOCK_50), .reset(system_mode == `SYSTEM_MODE_RESET), 
-        .enable(system_mode == `SYSTEM_MODE_TIMER), .tick_10ms(tick_10ms),
-        .load(load),
+        .enable(running && (system_mode == `SYSTEM_MODE_TIMER)), 
+        .tick_10ms(tick_10ms), .load(load),
         .hundredths_of_sec_in(digit[0]), 
         .tenths_of_sec_in(digit[1]), 
         .units_of_sec_in(digit[2]), 
@@ -275,8 +281,8 @@ module practica02 (
         // inputs
         .clk(CLOCK_50),
         .reset(reset),
-        .enable((system_mode == `SYSTEM_MODE_TIMER) ||
-                (system_mode == `SYSTEM_MODE_STOPWATCH)),
+        .enable(running && ((system_mode == `SYSTEM_MODE_TIMER) ||
+                (system_mode == `SYSTEM_MODE_STOPWATCH))),
 
         // outputs
         .load(load),
