@@ -1,6 +1,6 @@
 module counter #(
-    parameter SIZE = 19,
-    parameter MAX_CUT = 499999,
+    parameter SIZE = 5'd19,
+    parameter [SIZE-1:0] MAX_CUT = 19'd499999,
     parameter COUNT_DOWN = 1'b0
 )(
     input wire clk,
