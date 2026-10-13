@@ -1,7 +1,22 @@
+// KEY DEFINES
+`define KEY_START_PAUSE (4'd0)
+`define KEY_EDIT        (4'd1)
+`define KEY_RIGHT_DOWN  (4'd2)
+`define KEY_LEFT_UP     (4'd3)
+`define KEY_MAX         (4'd4)
+
+//SWITCH DEFINES
+`define SW_RESET    (4'd9)
+`define SW_SELECTOR (4'd0)
+
+// digits
+`define DIGIT_MAX_NUM (4'd6)
+
+//SYSTEM MODES DEFINES
 `define SYSTEM_MODE_RESET     (2'd0)
 `define SYSTEM_MODE_INIT      (2'd1)
-`define SYSTEM_MODE_STOPWATCH (2'd2)
-`define SYSTEM_MODE_TIMER     (2'd3)
+`define SYSTEM_MODE_STARTED   (2'd2)
+`define SYSTEM_MODE_PAUSED    (2'd3)
 
 module practica02 (
     input wire [3:0] KEY,
@@ -10,162 +25,141 @@ module practica02 (
 
     output wire [6:0] HEX0, HEX1, HEX2, HEX3, HEX4, HEX5
 );
-
     // /////////////////////////////////////////////////////////////////////////
-    // system mode determination
+    // keys
     // /////////////////////////////////////////////////////////////////////////
-    reg [1:0] system_mode = `SYSTEM_MODE_RESET;
-
-    // start pause key
-    reg  start_pause_prev = 1'b0;
-    wire start_pause = ~KEY[0];
-    wire start_pause_pressed = start_pause && !start_pause_prev;
-
-    // switches
-    wire reset = ~SW[9];
-    wire function_selector = SW[0];
-    wire [6:0] hex0, hex1, hex2, hex3, hex4, hex5;
-
-    // left up navigation key
-    reg  left_up_prev = 1'b0;
-    wire left_up = ~KEY[3];
-    wire left_up_pressed = left_up && !left_up_prev;
-
-    // right down navigation key
-    reg  right_down_prev = 1'b0;
-    wire right_down = ~KEY[2];
-    wire right_down_pressed = right_down && !right_down_prev;
-
-    // selected digit after left/right navigation 
-    reg [2:0] selected_digit = 1'd0;
-
-    // max value of digit selected (tens of minute and second max is 5)
-    wire [3:0] selected_max = 
-        (selected_digit == 3 || selected_digit == 5) ? 4'd5 : 4'd9;
-
-    // edit digit key
-    reg  edit_prev = 1'b0;
-    wire edit = ~KEY[1];
-    wire edit_pressed = edit && !edit_prev;
-    reg editing = 1'd0;
-    wire load = !reset && (system_mode == `SYSTEM_MODE_INIT) && 
-                start_pause_pressed;
-
-    // MM:SS.cc digits
-    reg [3:0] digit [0:5];
-
-    //
-    reg [3:0] hundredths_of_sec, tenths_of_sec, units_of_sec, tens_of_sec, 
-            units_of_min, tens_of_min;
-
-    reg running;
+    reg [`KEY_MAX-1:0] key_prev;
+    wire [`KEY_MAX-1:0] key_pressed;
+    assign key_pressed = (~KEY) & ~key_prev;
 
     always @(posedge CLOCK_50) begin
-        if (reset) begin
-        system_mode <= `SYSTEM_MODE_RESET;
-        
+        if (SW[`SW_RESET]) begin
+            key_prev    <= {`KEY_MAX{1'b0}};
         end else begin
-            // use digit as display_7_seg inputs
-            hundredths_of_sec = digit[0];
-            tenths_of_sec     = digit[1]; 
-            units_of_sec      = digit[2]; 
-            tens_of_sec       = digit[3];
-            units_of_min      = digit[4]; 
-            tens_of_min       = digit[5];
+            key_prev    <= ~KEY;
+        end
+    end
 
-            // hold key values
-            start_pause_prev <= start_pause;
-            edit_prev        <= edit;
-            left_up_prev     <= left_up;
-            right_down_prev  <= right_down;
+    // /////////////////////////////////////////////////////////////////////////
+    // system mode transitions
+    // /////////////////////////////////////////////////////////////////////////
+    reg [1:0] system_mode;
+    reg fnc_selected;
 
-            running <= start_pause_pressed ? ~running : running;
+    always @(posedge CLOCK_50) begin
+        if (SW[`SW_RESET]) begin
+            system_mode <= `SYSTEM_MODE_RESET;
+            fnc_selected <= 0;
 
+        end else begin
             case (system_mode)
                 `SYSTEM_MODE_RESET: begin
-                    // navigation reset
-                    selected_digit = 3'd0;
-                    editing        = 1'b0;
-                    digit[0]       = 4'd0;
-                    digit[1]       = 4'd0;
-                    digit[2]       = 4'd0;
-                    digit[3]       = 4'd0;
-                    digit[4]       = 4'd0;
-                    digit[5]       = 4'd0;
-
-                    running <= 1'b0;
-
-                    // next mode
+                    fnc_selected <= 0;
+                    // default transition
                     system_mode <= `SYSTEM_MODE_INIT;
                 end
-
+                
                 `SYSTEM_MODE_INIT: begin
-                    if (start_pause_pressed) begin
-                        // stop digit edition and 
-                        editing <= 1'b0;
-                        // next mode
-                        system_mode <= function_selector ? 
-                         `SYSTEM_MODE_STOPWATCH : `SYSTEM_MODE_TIMER;
-                    
-                    end else if (edit_pressed) begin
-                        // toggle up/down digit edition
-                        editing <= ~editing;
-
-                    end else if (!editing) begin
-                        // left/right digit navigation
-                        if (left_up_pressed) begin
-                            selected_digit <= (selected_digit == 5) ? 
-                                            3'd0 : selected_digit + 3'd1;
-                        end else if (right_down_pressed) begin
-                            selected_digit <= (selected_digit == 0) ? 
-                                            3'd5 : selected_digit - 3'd1;
-                        end
-
-                    end else begin
-                        // up/down digit navigation
-                        if (left_up_pressed) begin
-                            digit[selected_digit] <= 
-                                (digit[selected_digit] == selected_max) ? 
-                                4'd0 : digit[selected_digit] + 4'd1;
-                        end else if (right_down_pressed) begin
-                            digit[selected_digit] <= 
-                                (digit[selected_digit] == 0) ? 
-                                selected_max : digit[selected_digit] - 4'd1;
-                        end
+                    // start detected
+                    if (key_pressed[`KEY_START_PAUSE]) begin
+                        system_mode <= `SYSTEM_MODE_STARTED;
+                        fnc_selected <= SW[`SW_SELECTOR];
                     end
                 end
 
-                `SYSTEM_MODE_STOPWATCH: begin
-                    // use stopwatch outputs as display_7_seg inputs 
-                    hundredths_of_sec = stopwatch_hundredths_of_sec;
-                    tenths_of_sec     = stopwatch_tenths_of_sec; 
-                    units_of_sec      = stopwatch_units_of_sec; 
-                    tens_of_sec       = stopwatch_tens_of_sec;
-                    units_of_min      = stopwatch_units_of_min; 
-                    tens_of_min       = stopwatch_tens_of_min;    
-
-                    // Stay in this mode until reset
+                `SYSTEM_MODE_STARTED: begin
+                    // selected function changed
+                    if (fnc_selected != SW[`SW_SELECTOR]) begin
+                        system_mode <= `SYSTEM_MODE_RESET;
+                    
+                    // pause detected
+                    end else if (key_pressed[`KEY_START_PAUSE]) begin
+                        system_mode <= `SYSTEM_MODE_PAUSED;
+                    end
                 end
                 
-                `SYSTEM_MODE_TIMER: begin
-                    // use timer outputs as display_7_seg inputs 
-                    hundredths_of_sec = timer_hundredths_of_sec;
-                    tenths_of_sec     = timer_tenths_of_sec; 
-                    units_of_sec      = timer_units_of_sec; 
-                    tens_of_sec       = timer_tens_of_sec;
-                    units_of_min      = timer_units_of_min; 
-                    tens_of_min       = timer_tens_of_min;    
-
-                    // Stay in this mode until reset
+                `SYSTEM_MODE_PAUSED: begin
+                    // selected function changed
+                    if (fnc_selected != SW[`SW_SELECTOR]) begin
+                        system_mode <= `SYSTEM_MODE_RESET;
+                    // start detected
+                    end else if (key_pressed[`KEY_START_PAUSE]) begin
+                        system_mode <= `SYSTEM_MODE_STARTED;
+                    end
                 end
 
                 default: begin
-                    // Unkown mode, go to reset
+                    // unkown mode
                     system_mode <= `SYSTEM_MODE_RESET;
                 end
+
             endcase
         end
     end
+
+    // /////////////////////////////////////////////////////////////////////////
+    // load counters
+    // /////////////////////////////////////////////////////////////////////////
+    reg editing;
+    reg [2:0] selected_digit;
+    reg [3:0] digit [0:5];
+
+    // max value of selected digit
+    wire [3:0] selected_max = 
+        (selected_digit == 3 || selected_digit == 5) ? 4'd5 : 4'd9;
+
+    always @(posedge CLOCK_50) begin
+        case (system_mode)
+            `SYSTEM_MODE_RESET: begin
+                editing        <= 1'b0;
+                selected_digit <= 3'd0;
+                digit[0]       <= 4'd0;
+                digit[1]       <= 4'd0;
+                digit[2]       <= 4'd0;
+                digit[3]       <= 4'd0;
+                digit[4]       <= 4'd0;
+                digit[5]       <= 4'd0;
+            end
+
+            `SYSTEM_MODE_INIT: begin
+                if (key_pressed[`KEY_EDIT]) begin
+                    editing <= ~editing;
+                end
+
+                // left/right digit navigation
+                if (!editing) begin
+                    if (key_pressed[`KEY_LEFT_UP]) begin
+                        selected_digit <= (selected_digit == 5) ? 
+                                        3'd0 : selected_digit + 3'd1;
+                    end else if (key_pressed[`KEY_RIGHT_DOWN]) begin
+                        selected_digit <= (selected_digit == 0) ? 
+                                        3'd5 : selected_digit - 3'd1;
+                    end
+
+                // up/down digit navigation
+                end else begin
+                    if (key_pressed[`KEY_LEFT_UP]) begin
+                        digit[selected_digit] <= 
+                            (digit[selected_digit] == selected_max) ? 
+                            4'd0 : digit[selected_digit] + 4'd1;
+                    end else if (key_pressed[`KEY_RIGHT_DOWN]) begin
+                        digit[selected_digit] <= 
+                            (digit[selected_digit] == 0) ? 
+                            selected_max : digit[selected_digit] - 4'd1;
+                    end
+                end
+            end
+        endcase
+    end
+
+
+    // /////////////////////////////////////////////////////////////////////////
+    // load
+    // /////////////////////////////////////////////////////////////////////////
+    wire load = (~SW[`SW_RESET]) && (system_mode == `SYSTEM_MODE_INIT) && 
+                key_pressed[`KEY_START_PAUSE];
+
+    
 
     // /////////////////////////////////////////////////////////////////////////
     // stopwatch and timer instances
@@ -173,11 +167,11 @@ module practica02 (
     wire [3:0] stopwatch_hundredths_of_sec, stopwatch_tenths_of_sec,
                stopwatch_units_of_sec, stopwatch_tens_of_sec, 
                stopwatch_units_of_min, stopwatch_tens_of_min;
-    
+
     stopwatch stopwatch_inst (
         // inputs
         .clk(CLOCK_50), .reset(system_mode == `SYSTEM_MODE_RESET), 
-        .enable(running && (system_mode == `SYSTEM_MODE_STOPWATCH)), 
+        .enable(~fnc_selected & (system_mode == `SYSTEM_MODE_STARTED)), 
         .tick_10ms(tick_10ms), .load(load), 
         .hundredths_of_sec_in(digit[0]), 
         .tenths_of_sec_in(digit[1]), 
@@ -202,7 +196,7 @@ module practica02 (
     timer timer_inst (
         // inputs
         .clk(CLOCK_50), .reset(system_mode == `SYSTEM_MODE_RESET), 
-        .enable(running && (system_mode == `SYSTEM_MODE_TIMER)), 
+        .enable(fnc_selected & (system_mode == `SYSTEM_MODE_STARTED)), 
         .tick_10ms(tick_10ms), .load(load),
         .hundredths_of_sec_in(digit[0]), 
         .tenths_of_sec_in(digit[1]), 
@@ -221,12 +215,45 @@ module practica02 (
     );
 
     // /////////////////////////////////////////////////////////////////////////
-    // display instances
+    // display
     // /////////////////////////////////////////////////////////////////////////
+    reg [3:0] hundredths_of_sec, tenths_of_sec, units_of_sec, tens_of_sec, 
+        units_of_min, tens_of_min;
+
+    always @(*) begin
+        case (system_mode)        
+            // Use functions outputs for display
+            `SYSTEM_MODE_STARTED,`SYSTEM_MODE_PAUSED: begin
+                hundredths_of_sec = fnc_selected ? 
+                        timer_hundredths_of_sec : stopwatch_hundredths_of_sec;
+                tenths_of_sec     = fnc_selected ? 
+                        timer_tenths_of_sec : stopwatch_tenths_of_sec;
+                units_of_sec      = fnc_selected ? 
+                        timer_units_of_sec : stopwatch_units_of_sec;
+                tens_of_sec       = fnc_selected ? 
+                        timer_tens_of_sec : stopwatch_tens_of_sec;
+                units_of_min      = fnc_selected ? 
+                        timer_units_of_min : stopwatch_units_of_min;
+                tens_of_min       = fnc_selected ? 
+                        timer_tens_of_min : stopwatch_tens_of_min;
+            end
+
+            // Use digit for display
+            default: begin
+                hundredths_of_sec = digit[0];
+                tenths_of_sec     = digit[1];
+                units_of_sec      = digit[2];
+                tens_of_sec       = digit[3];
+                units_of_min      = digit[4];
+                tens_of_min       = digit[5];
+            end
+        endcase
+    end
+
     display_7_seg display_inst0 (
         // inputs
         .SW(hundredths_of_sec), 
-        .reset(reset),
+        .reset((system_mode == `SYSTEM_MODE_RESET)),
         
         // outputs
         .HEX0(HEX0));
@@ -234,7 +261,7 @@ module practica02 (
     display_7_seg display_inst1 (
         // inputs
         .SW(tenths_of_sec), 
-        .reset(reset),
+        .reset((system_mode == `SYSTEM_MODE_RESET)),
         
         // outputs
         .HEX0(HEX1));
@@ -242,7 +269,7 @@ module practica02 (
     display_7_seg display_inst2 (
         // inputs
         .SW(units_of_sec), 
-        .reset(reset),
+        .reset((system_mode == `SYSTEM_MODE_RESET)),
         
         // outputs
         .HEX0(HEX2));
@@ -250,7 +277,7 @@ module practica02 (
     display_7_seg display_inst3 (
         // inputs
         .SW(tens_of_sec), 
-        .reset(reset),
+        .reset((system_mode == `SYSTEM_MODE_RESET)),
         
         // outputs
         .HEX0(HEX3));
@@ -258,7 +285,7 @@ module practica02 (
     display_7_seg display_inst4 (
         // inputs
         .SW(units_of_min), 
-        .reset(reset),
+        .reset((system_mode == `SYSTEM_MODE_RESET)),
         
         // outputs
         .HEX0(HEX4));
@@ -266,7 +293,7 @@ module practica02 (
     display_7_seg display_inst5 (
         // inputs
         .SW(tens_of_min), 
-        .reset(reset),
+        .reset((system_mode == `SYSTEM_MODE_RESET)),
         
         // outputs
         .HEX0(HEX5));
@@ -280,9 +307,8 @@ module practica02 (
               .COUNT_DOWN(1'b0)) counter_inst0 (
         // inputs
         .clk(CLOCK_50),
-        .reset(reset),
-        .enable(running && ((system_mode == `SYSTEM_MODE_TIMER) ||
-                (system_mode == `SYSTEM_MODE_STOPWATCH))),
+        .reset((system_mode == `SYSTEM_MODE_RESET)),
+        .enable((system_mode == `SYSTEM_MODE_STARTED)),
 
         // outputs
         .load(load),
