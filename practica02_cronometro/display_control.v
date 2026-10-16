@@ -22,10 +22,10 @@ module display_control #(
         .clk(clk),
         .reset(reset),
         .enable(enable),
-
-        // outputs
         .load(load),
         .cnt_in(24'd0),
+
+        // outputs
         .cnt(), //unconnected
         .max_hit(tick_250ms)
     );

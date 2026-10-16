@@ -80,10 +80,10 @@ module practica02 (
         .clk(CLOCK_50),
         .reset((mode == `MODE_RESET)),
         .enable((mode == `MODE_STARTED)),
-
-        // outputs
         .load((mode == `MODE_INIT) && start_pause),
         .cnt_in(19'd0),
+
+        // outputs
         .cnt(), //unconnected
         .max_hit(tick_10ms)
     );
