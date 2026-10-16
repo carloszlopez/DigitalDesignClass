@@ -1,11 +1,11 @@
 `include "common_defines.vh"
 
 module practica02 (
-    input wire [3:0] KEY,
-    input wire [9:0] SW,
-    input wire CLOCK_50,
+    input [3:0] KEY,
+    input [9:0] SW,
+    input CLOCK_50,
 
-    output reg [6:0] HEX0, HEX1, HEX2, HEX3, HEX4, HEX5
+    output [6:0] HEX0, HEX1, HEX2, HEX3, HEX4, HEX5
 );
     // /////////////////////////////////////////////////////////////////////////
     // system control
@@ -109,6 +109,22 @@ module practica02 (
     // /////////////////////////////////////////////////////////////////////////
     // stopwatch and timer instances
     // /////////////////////////////////////////////////////////////////////////
+    // 10ms counter
+    counter #(.SIZE(5'd19), .MAX_CUT(19'd499999),
+              .COUNT_DOWN(1'b0)) counter_inst0 (
+        // inputs
+        .clk(CLOCK_50),
+        .reset((mode == `MODE_RESET)),
+        .enable((mode == `MODE_STARTED)),
+
+        // outputs
+        .load((mode == `MODE_INIT) && start_pause),
+        .cnt_in(19'd0),
+        .cnt(), //unconnected
+        .max_hit(tick_10ms)
+    );
+
+    // stopwatch function
     wire [3:0] stopwatch_hundredths_of_sec, stopwatch_tenths_of_sec,
                stopwatch_units_of_sec, stopwatch_tens_of_sec,
                stopwatch_units_of_min, stopwatch_tens_of_min;
@@ -137,6 +153,7 @@ module practica02 (
         .finished(stopwatch_finished)
     );
 
+    // timer function
     wire [3:0] timer_hundredths_of_sec, timer_tenths_of_sec,
                timer_units_of_sec, timer_tens_of_sec,
                timer_units_of_min, timer_tens_of_min;
@@ -165,185 +182,58 @@ module practica02 (
         .finished(timer_finished)
     );
 
-    // /////////////////////////////////////////////////////////////////////////
-    // display
-    // /////////////////////////////////////////////////////////////////////////
+    // ////////////////////////////////////////////////////////////////////////
+    // display control
+    // ////////////////////////////////////////////////////////////////////////
+    // Route digits
     reg [3:0] hundredths_of_sec, tenths_of_sec, units_of_sec, tens_of_sec,
         units_of_min, tens_of_min;
 
     always @(*) begin
+        // Use initial digits
+        hundredths_of_sec = digit[0];
+        tenths_of_sec     = digit[1];
+        units_of_sec      = digit[2];
+        tens_of_sec       = digit[3];
+        units_of_min      = digit[4];
+        tens_of_min       = digit[5];
         case (mode)
-            // Use functions outputs for display
-            `MODE_STARTED,`MODE_PAUSED: begin
-                hundredths_of_sec = fnc_selected ?
-                        timer_hundredths_of_sec : stopwatch_hundredths_of_sec;
-                tenths_of_sec     = fnc_selected ?
-                        timer_tenths_of_sec : stopwatch_tenths_of_sec;
-                units_of_sec      = fnc_selected ?
-                        timer_units_of_sec : stopwatch_units_of_sec;
-                tens_of_sec       = fnc_selected ?
-                        timer_tens_of_sec : stopwatch_tens_of_sec;
-                units_of_min      = fnc_selected ?
-                        timer_units_of_min : stopwatch_units_of_min;
-                tens_of_min       = fnc_selected ?
-                        timer_tens_of_min : stopwatch_tens_of_min;
-            end
-
-            // Use digit for display
-            default: begin
-                hundredths_of_sec = digit[0];
-                tenths_of_sec     = digit[1];
-                units_of_sec      = digit[2];
-                tens_of_sec       = digit[3];
-                units_of_min      = digit[4];
-                tens_of_min       = digit[5];
-            end
+            `MODE_STARTED, `MODE_PAUSED: 
+                // use timer digits
+                if (fnc_selected) begin
+                    hundredths_of_sec = timer_hundredths_of_sec;
+                    tenths_of_sec     = timer_tenths_of_sec;
+                    units_of_sec      = timer_units_of_sec;
+                    tens_of_sec       = timer_tens_of_sec;
+                    units_of_min      = timer_units_of_min;
+                    tens_of_min       = timer_tens_of_min;
+                    
+                // use stopwatch digits
+                end else begin
+                    hundredths_of_sec = stopwatch_hundredths_of_sec;
+                    tenths_of_sec     = stopwatch_tenths_of_sec;
+                    units_of_sec      = stopwatch_units_of_sec;
+                    tens_of_sec       = stopwatch_tens_of_sec;
+                    units_of_min      = stopwatch_units_of_min;
+                    tens_of_min       = stopwatch_tens_of_min;
+                end
         endcase
     end
 
-    wire [6:0] hex0_value, hex1_value, hex2_value, hex3_value, hex4_value, hex5_value;
-
-    display_7_seg display_inst0 (
-        // inputs
-        .SW(hundredths_of_sec),
-        .reset((mode == `MODE_RESET)),
-
-        // outputs
-        .HEX0(hex0_value));
-
-    display_7_seg display_inst1 (
-        // inputs
-        .SW(tenths_of_sec),
-        .reset((mode == `MODE_RESET)),
-
-        // outputs
-        .HEX0(hex1_value));
-
-    display_7_seg display_inst2 (
-        // inputs
-        .SW(units_of_sec),
-        .reset((mode == `MODE_RESET)),
-
-        // outputs
-        .HEX0(hex2_value));
-
-    display_7_seg display_inst3 (
-        // inputs
-        .SW(tens_of_sec),
-        .reset((mode == `MODE_RESET)),
-
-        // outputs
-        .HEX0(hex3_value));
-
-    display_7_seg display_inst4 (
-        // inputs
-        .SW(units_of_min),
-        .reset((mode == `MODE_RESET)),
-
-        // outputs
-        .HEX0(hex4_value));
-
-    display_7_seg display_inst5 (
-        // inputs
-        .SW(tens_of_min),
-        .reset((mode == `MODE_RESET)),
-
-        // outputs
-        .HEX0(hex5_value));
-
-
-    // ////////////////////////////////////////////////////////////////////////
-    // 10ms counter
-    // ////////////////////////////////////////////////////////////////////////
-
-    counter #(.SIZE(5'd19), .MAX_CUT(19'd499999),
-              .COUNT_DOWN(1'b0)) counter_inst0 (
-        // inputs
-        .clk(CLOCK_50),
-        .reset((mode == `MODE_RESET)),
-        .enable((mode == `MODE_STARTED)),
-
-        // outputs
-        .load((mode == `MODE_INIT) && start_pause),
-        .cnt_in(19'd0),
-        .cnt(), //unconnected
-        .max_hit(tick_10ms)
-    );
-
-    // ////////////////////////////////////////////////////////////////////////
-    // display blink
-    // ////////////////////////////////////////////////////////////////////////
-    wire tick_250ms;
-    reg blink_signal;
-
-    counter #(.SIZE(5'd24), .MAX_CUT(24'd12499999),
-              .COUNT_DOWN(1'b0)) counter_blink (
+    wire [41:0] hex;
+    assign {HEX5, HEX4, HEX3, HEX2, HEX1, HEX0} = hex;
+    display_control #(.DIGIT_NUM(6)) display_control (
         // inputs
         .clk(CLOCK_50),
         .reset((mode == `MODE_RESET)),
         .enable((mode != `MODE_RESET)),
+        .load((mode == `MODE_INIT) && start_pause),
+        .blink_control((mode == `MODE_INIT) ? 
+                        (6'b000001 << selected_digit) : {6{fnc_finished_latched}}),
+        .digits({tens_of_min, units_of_min, tens_of_sec, units_of_sec, 
+                 tenths_of_sec, hundredths_of_sec}),
 
         // outputs
-        .load((mode == `MODE_INIT) && start_pause),
-        .cnt_in(24'd0),
-        .cnt(), //unconnected
-        .max_hit(tick_250ms)
+        .hex(hex)
     );
-
-    // toggle blink_signal every tick_250ms
-    always @(posedge CLOCK_50) begin
-
-        if (mode == `MODE_RESET) begin
-            blink_signal <= 1'b0;
-
-        end else if (tick_250ms) begin
-            blink_signal <= ~blink_signal;
-        end
-    end
-
-    always @(*) begin
-        case (mode)
-            // toggle selected digit and leave others steady
-            `MODE_INIT: begin
-                HEX0 = (selected_digit == 0) ?
-                 (blink_signal ? hex0_value : 7'b1111111) : hex0_value;
-                HEX1 = (selected_digit == 1) ?
-                 (blink_signal ? hex1_value : 7'b1111111) : hex1_value;
-                HEX2 = (selected_digit == 2) ?
-                 (blink_signal ? hex2_value : 7'b1111111) : hex2_value;
-                HEX3 = (selected_digit == 3) ?
-                 (blink_signal ? hex3_value : 7'b1111111) : hex3_value;
-                HEX4 = (selected_digit == 4) ?
-                 (blink_signal ? hex4_value : 7'b1111111) : hex4_value;
-                HEX5 = (selected_digit == 5) ?
-                 (blink_signal ? hex5_value : 7'b1111111) : hex5_value;
-            end
-
-            // toggle all digits if finished
-            `MODE_STARTED, `MODE_PAUSED: begin
-                HEX0 = fnc_finished_latched ?
-                 (blink_signal ? hex0_value : 7'b1111111) : hex0_value;
-                HEX1 = fnc_finished_latched ?
-                 (blink_signal ? hex1_value : 7'b1111111) : hex1_value;
-                HEX2 = fnc_finished_latched ?
-                 (blink_signal ? hex2_value : 7'b1111111) : hex2_value;
-                HEX3 = fnc_finished_latched ?
-                 (blink_signal ? hex3_value : 7'b1111111) : hex3_value;
-                HEX4 = fnc_finished_latched ?
-                 (blink_signal ? hex4_value : 7'b1111111) : hex4_value;
-                HEX5 = fnc_finished_latched ?
-                 (blink_signal ? hex5_value : 7'b1111111) : hex5_value;
-            end
-
-            // steady digit
-            default: begin
-                HEX0 = hex0_value;
-                HEX1 = hex1_value;
-                HEX2 = hex2_value;
-                HEX3 = hex3_value;
-                HEX4 = hex4_value;
-                HEX5 = hex5_value;
-            end
-        endcase
-    end
 endmodule
