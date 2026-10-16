@@ -195,6 +195,8 @@ set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX0[6]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CLOCK_50
 set_global_assignment -name SEARCH_PATH practica02_cronometro
 
+set_global_assignment -name VERILOG_FILE /practica02_cronometro/navigation.v
+set_global_assignment -name VERILOG_FILE /practica02_cronometro/display_control.v
 set_global_assignment -name VERILOG_FILE /practica02_cronometro/system_control.v
 set_global_assignment -name VERILOG_FILE /practica02_cronometro/keys_monitor.v
 set_global_assignment -name VERILOG_FILE practica02_cronometro/stopwatch.v

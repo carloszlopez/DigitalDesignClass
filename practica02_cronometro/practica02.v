@@ -51,60 +51,24 @@ module practica02 (
     );
 
     // /////////////////////////////////////////////////////////////////////////
-    // load counters
+    // navigation
     // /////////////////////////////////////////////////////////////////////////
-    reg editing;
-    reg [2:0] selected_digit;
-    reg [3:0] digit [0:5];
+    wire [2:0] selected_digit;
+    wire [23:0] init_digits;
 
-    // max value of selected digit
-    wire [3:0] selected_max =
-        (selected_digit == 3 || selected_digit == 5) ? 4'd5 : 4'd9;
+    navigation navigation (
+        // inputs
+        .clk(CLOCK_50), 
+        .reset(mode != `MODE_INIT),
+        .enable(mode == `MODE_INIT),
+        .edit(edit),
+        .right_down(right_down), 
+        .left_up(left_up),
 
-    always @(posedge CLOCK_50) begin
-        case (mode)
-            `MODE_RESET: begin
-                editing        <= 1'b0;
-                selected_digit <= 3'd0;
-                digit[0]       <= 4'd0;
-                digit[1]       <= 4'd0;
-                digit[2]       <= 4'd0;
-                digit[3]       <= 4'd0;
-                digit[4]       <= 4'd0;
-                digit[5]       <= 4'd0;
-            end
-
-            `MODE_INIT: begin
-                // toggle if edit key is pressed
-                if (edit) begin
-                    editing <= ~editing;
-                end
-
-                // left/right digit navigation
-                if (!editing) begin
-                    if (left_up) begin
-                        selected_digit <= (selected_digit == 5) ?
-                                        3'd0 : selected_digit + 3'd1;
-                    end else if (right_down) begin
-                        selected_digit <= (selected_digit == 0) ?
-                                        3'd5 : selected_digit - 3'd1;
-                    end
-
-                // up/down digit navigation
-                end else begin
-                    if (left_up) begin
-                        digit[selected_digit] <=
-                            (digit[selected_digit] == selected_max) ?
-                            4'd0 : digit[selected_digit] + 4'd1;
-                    end else if (right_down) begin
-                        digit[selected_digit] <=
-                            (digit[selected_digit] == 0) ?
-                            selected_max : digit[selected_digit] - 4'd1;
-                    end
-                end
-            end
-        endcase
-    end
+        // outputs
+        .init_digits(init_digits),
+        .selected_digit(selected_digit)
+    );
 
     // /////////////////////////////////////////////////////////////////////////
     // stopwatch and timer instances
@@ -136,12 +100,12 @@ module practica02 (
         .enable(!fnc_selected && mode == `MODE_STARTED),
         .tick_10ms(tick_10ms),
         .load((mode == `MODE_INIT) && start_pause),
-        .hundredths_of_sec_in(digit[0]),
-        .tenths_of_sec_in(digit[1]),
-        .units_of_sec_in(digit[2]),
-        .tens_of_sec_in(digit[3]),
-        .units_of_min_in(digit[4]),
-        .tens_of_min_in(digit[5]),
+        .hundredths_of_sec_in(init_digits[3:0]),
+        .tenths_of_sec_in(init_digits[7:4]),
+        .units_of_sec_in(init_digits[11:8]),
+        .tens_of_sec_in(init_digits[15:12]),
+        .units_of_min_in(init_digits[19:16]),
+        .tens_of_min_in(init_digits[23:20]),
 
         // outputs
         .hundredths_of_sec(stopwatch_hundredths_of_sec),
@@ -165,12 +129,12 @@ module practica02 (
         .enable(fnc_selected && mode == `MODE_STARTED),
         .tick_10ms(tick_10ms),
         .load((mode == `MODE_INIT) && start_pause),
-        .hundredths_of_sec_in(digit[0]),
-        .tenths_of_sec_in(digit[1]),
-        .units_of_sec_in(digit[2]),
-        .tens_of_sec_in(digit[3]),
-        .units_of_min_in(digit[4]),
-        .tens_of_min_in(digit[5]),
+        .hundredths_of_sec_in(init_digits[3:0]),
+        .tenths_of_sec_in(init_digits[7:4]),
+        .units_of_sec_in(init_digits[11:8]),
+        .tens_of_sec_in(init_digits[15:12]),
+        .units_of_min_in(init_digits[19:16]),
+        .tens_of_min_in(init_digits[23:20]),
 
         // outputs
         .hundredths_of_sec(timer_hundredths_of_sec),
@@ -190,14 +154,7 @@ module practica02 (
         units_of_min, tens_of_min;
 
     always @(*) begin
-        // Use initial digits
-        hundredths_of_sec = digit[0];
-        tenths_of_sec     = digit[1];
-        units_of_sec      = digit[2];
-        tens_of_sec       = digit[3];
-        units_of_min      = digit[4];
-        tens_of_min       = digit[5];
-        case (mode)
+        case (mode)         
             `MODE_STARTED, `MODE_PAUSED: 
                 // use timer digits
                 if (fnc_selected) begin
@@ -217,6 +174,16 @@ module practica02 (
                     units_of_min      = stopwatch_units_of_min;
                     tens_of_min       = stopwatch_tens_of_min;
                 end
+
+            // Use initial digits
+            default: begin
+                hundredths_of_sec = init_digits[3:0];
+                tenths_of_sec     = init_digits[7:4];
+                units_of_sec      = init_digits[11:8];
+                tens_of_sec       = init_digits[15:12];
+                units_of_min      = init_digits[19:16];
+                tens_of_min       = init_digits[23:20];
+            end
         endcase
     end
 
