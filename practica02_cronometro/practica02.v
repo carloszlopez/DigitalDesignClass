@@ -35,7 +35,6 @@ module practica02 (
     // /////////////////////////////////////////////////////////////////////////
     // keys monitor
     // /////////////////////////////////////////////////////////////////////////
-
     keys_monitor keys_monitor (
         // inputs
         .clk(CLOCK_50),
@@ -71,11 +70,10 @@ module practica02 (
     );
 
     // /////////////////////////////////////////////////////////////////////////
-    // stopwatch and timer instances
+    // functions tick
     // /////////////////////////////////////////////////////////////////////////
-    // 10ms counter
     counter #(.SIZE(5'd19), .MAX_CUT(19'd499999),
-              .COUNT_DOWN(1'b0)) counter_inst0 (
+              .COUNT_DOWN(1'b0)) counter_10ms (
         // inputs
         .clk(CLOCK_50),
         .reset((mode == `MODE_RESET)),
@@ -88,6 +86,9 @@ module practica02 (
         .max_hit(tick_10ms)
     );
 
+    // /////////////////////////////////////////////////////////////////////////
+    // stopwatch and timer functions
+    // /////////////////////////////////////////////////////////////////////////
     // stopwatch function
     wire [3:0] stopwatch_hundredths_of_sec, stopwatch_tenths_of_sec,
                stopwatch_units_of_sec, stopwatch_tens_of_sec,
@@ -147,9 +148,8 @@ module practica02 (
     );
 
     // ////////////////////////////////////////////////////////////////////////
-    // display control
+    // digit routing
     // ////////////////////////////////////////////////////////////////////////
-    // Route digits
     reg [3:0] hundredths_of_sec, tenths_of_sec, units_of_sec, tens_of_sec,
         units_of_min, tens_of_min;
 
@@ -187,6 +187,9 @@ module practica02 (
         endcase
     end
 
+    // ////////////////////////////////////////////////////////////////////////
+    // display control
+    // ////////////////////////////////////////////////////////////////////////
     wire [41:0] hex;
     assign {HEX5, HEX4, HEX3, HEX2, HEX1, HEX0} = hex;
     display_control #(.DIGIT_NUM(6)) display_control (
