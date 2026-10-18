@@ -34,3 +34,7 @@ vsim.wlf
 /cs_pin_model_dump.txt
 /dir
 questa_test_bench.cr.mti
+
+# Simulink
+**/slprj/*
+*.slxc
