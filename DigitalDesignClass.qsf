@@ -39,7 +39,7 @@
 
 set_global_assignment -name FAMILY "Cyclone V"
 set_global_assignment -name DEVICE 5CSXFC6D6F31C6
-set_global_assignment -name TOP_LEVEL_ENTITY Counter_02Limit_ovf
+set_global_assignment -name TOP_LEVEL_ENTITY debouncer
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 24.1STD.0
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "22:14:05  AUGUST 30, 2026"
 set_global_assignment -name LAST_QUARTUS_VERSION "24.1std.0 Lite Edition"
@@ -147,6 +147,7 @@ set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX5[2] -disable
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX5[4] -disable
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX5[6] -disable
 set_location_assignment PIN_AF14 -to CLOCK_50
+set_global_assignment -name VERILOG_FILE /tarea05/debouncer.v
 set_global_assignment -name VERILOG_FILE /tarea05/Shift_Register_R_Param.v
 set_global_assignment -name VERILOG_FILE /tarea05/Reg_Param.v
 set_global_assignment -name VERILOG_FILE /tarea05/ff_d_e.v
