@@ -7,7 +7,7 @@ module Counter_02Limit_ovf_TB(    );
 reg rst, clk, enable;
 wire [3:0]Q;
 wire overflow;
-Counter_0_n_param # (.N(4), .Limit(9) )
+Counter_02Limit_ovf # (.N(4), .Limit(9) )
 UUT (.rst(rst), .enable(enable), .clk(clk),
 	.Q(Q), .overflow(overflow)    );
 initial
