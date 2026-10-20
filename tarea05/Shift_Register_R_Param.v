@@ -13,9 +13,9 @@ module Shift_Register_R_Param #(parameter width = 9)
     input d,
     output reg [width-1:0] Q
     );
-always @(posedge rst, posedge clk)
+always @(posedge clk)
 	begin
-		if (rst)
+		if (~rst)
 			Q <= {width{1'b0}};
 		else
 			if (enable)

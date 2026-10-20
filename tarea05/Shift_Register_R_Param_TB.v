@@ -16,13 +16,11 @@ Shift_Register_R_Param # (.width (width) )
 initial
 	begin
 		clk 		= 1'b0;
-		rst 		= 1'b0;
+		rst 		= 1'b1;
 		enable	= 1'b1;
 		d 		= 1'b0;
-		#5 rst	= 1'b1;
-		   rst	= 1'b0;
-	  #225  rst	= 1'b1;
-	  #5	rst 		= 1'b0;
+		#240 rst	= 1'b0;
+	  	#5  rst	= 1'b1;
 	end
 
 always
