@@ -39,7 +39,7 @@
 
 set_global_assignment -name FAMILY "Cyclone V"
 set_global_assignment -name DEVICE 5CSXFC6D6F31C6
-set_global_assignment -name TOP_LEVEL_ENTITY ALU_Display
+set_global_assignment -name TOP_LEVEL_ENTITY Reg_Param
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 24.1STD.0
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "22:14:05  AUGUST 30, 2026"
 set_global_assignment -name LAST_QUARTUS_VERSION "24.1std.0 Lite Edition"
@@ -131,15 +131,32 @@ set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to LEDR[9] -disable
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to LEDR[2] -entity logic_gate_case -disable
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to LEDR[1] -entity logic_gate_case -disable
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to LEDR[3] -entity logic_gate_case -disable
-set_global_assignment -name VERILOG_FILE /display_7_seg.v
-set_global_assignment -name VERILOG_FILE /ALU_Display.v
-set_global_assignment -name VERILOG_FILE /ALU.v
+set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to LEDR[0] -disable
+set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX4[0] -disable
+set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX4[2] -disable
+set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX4[4] -disable
+set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX4[6] -disable
+set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX5[1] -disable
+set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX5[3] -disable
+set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX5[5] -disable
+set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX4[1] -disable
+set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX4[3] -disable
+set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX4[5] -disable
+set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX5[0] -disable
+set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX5[2] -disable
+set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX5[4] -disable
+set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX5[6] -disable
+set_location_assignment PIN_AF14 -to CLOCK_50
+set_global_assignment -name VERILOG_FILE /tarea05/Shift_Register_R_Param.v
+set_global_assignment -name VERILOG_FILE /tarea05/Reg_Param.v
+set_global_assignment -name VERILOG_FILE /tarea05/ff_d_e.v
+set_global_assignment -name VERILOG_FILE /tarea05/Counter_Param.v
+set_global_assignment -name VERILOG_FILE /tarea05/Counter_02Limit_ovf.v
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_instance_assignment -name IO_STANDARD "2.5 V" -to SW[0]
 set_instance_assignment -name IO_STANDARD "2.5 V" -to SW[1]
-set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to LEDR[0] -disable
 set_instance_assignment -name IO_STANDARD "2.5 V" -to KEY[0]
 set_instance_assignment -name IO_STANDARD "2.5 V" -to KEY[2]
 set_instance_assignment -name IO_STANDARD "2.5 V" -to KEY[1]
@@ -163,13 +180,6 @@ set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX2[6]
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX3[1]
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX3[3]
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX3[5]
-set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX4[0] -disable
-set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX4[2] -disable
-set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX4[4] -disable
-set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX4[6] -disable
-set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX5[1] -disable
-set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX5[3] -disable
-set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX5[5] -disable
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX1[2]
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX1[4]
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX1[6]
@@ -180,13 +190,6 @@ set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX3[0]
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX3[2]
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX3[4]
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX3[6]
-set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX4[1] -disable
-set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX4[3] -disable
-set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX4[5] -disable
-set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX5[0] -disable
-set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX5[2] -disable
-set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX5[4] -disable
-set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX5[6] -disable
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX0[0]
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX0[1]
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX0[2]
@@ -195,5 +198,4 @@ set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX0[4]
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX0[5]
 set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HEX0[6]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CLOCK_50
-set_location_assignment PIN_AF14 -to CLOCK_50
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

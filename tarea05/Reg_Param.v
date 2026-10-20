@@ -11,9 +11,9 @@ module Reg_Param  #(parameter width=4)(
     input enable,
     output reg [width-1:0]Q
     );
-always @(posedge rst, posedge clk)
+always @(posedge clk)
     begin
-        if (rst)
+        if (!rst)
             Q <= {width{1'b0}};
         else
             if (enable)

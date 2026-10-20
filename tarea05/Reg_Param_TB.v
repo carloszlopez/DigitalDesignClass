@@ -17,12 +17,12 @@ Reg_Param   #( .width(width) ) UUT (.rst(rst), .D(D), .clk(clk), .enable(enable)
 
 initial
 	begin
-	rst 		= 1'b0;
+	rst 		= 1'b1;
 	D 		= 8'h00;
 	clk 		= 1'b0;
 	enable 	= 1'b1;
-#5	rst 		= 1'b1;
-#3	rst 		= 1'b0;
+#5	rst 		= 1'b0;
+#3	rst 		= 1'b1;
 	end
 
 always
