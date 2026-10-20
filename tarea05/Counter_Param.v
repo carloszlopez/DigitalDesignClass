@@ -11,7 +11,7 @@ module Counter_Param
     input enable,
     output reg [n-1:0] Q  );
 
- always @( posedge rst, posedge clk) 
+ always @(posedge clk) 
     begin
         if (rst)
             Q <= {n{1'b0}};
