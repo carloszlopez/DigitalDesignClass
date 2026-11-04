@@ -1,3 +1,5 @@
+/* Shift Register Module. width: number of bits to be shifted. */
+
 module Shift_Register #(parameter width = 9)
 (
     input clk,
