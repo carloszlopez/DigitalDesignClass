@@ -11,61 +11,26 @@ module UART
     output parity_error,
     output rx_flag,
     output [7:0] Rx_Data
-)
-    parameter BAUD_RATE = 9600;
-
-    // Transition logic for UART state machine
-    parameter UART_IN_IDLE = 2b00;
-    parameter UART_IN_TX = 2b01;
-    parameter UART_IN_RX = 2b10;
-    parameter UART_IN_START_TX = 2b11;
-    parameter UART_IN_STOP_TX = 2b11;
-
-    wire [2:0] UART_state;
-    wire [2:0] UART_state_next;
-
-    always @(*) begin
-        UART_state_next = UART_state;
-        case (UART_state)
-            UART_IN_IDLE:
-            |   if (tx_send) UART_state_next = UART_IN_START_TX;
-                else if (rx_flag) UART_state_next = UART_IN_START_RX;
-            UART_IN_START_TX:
-                if (tx_send) UART_state_next = UART_IN_TX;
-            UART_IN_STOP_TX:
-                if (tx_send) UART_state_next = UART_IN_IDLE;
-            UART_IN_TX:
-                if  (tx_send) UART_state_next = UART_IN_STOP_TX;
-            UART_IN_RX: 
-            default:
-                UART_state_next = UART_IN_IDLE;
-        endcase
-    end
-
-
-    // Instantiate the parallel_to_serial and serial_to_parallel modules
-    parallel_to_serial #(.width(8)) tx_parallel_to_serial (
+);
+    // /////////////////////////////////////////////////////////////////////////
+    // uart receiver
+    // /////////////////////////////////////////////////////////////////////////
+    UART_Rx UART_Rx_Inst
+    (
+        .rx(rx),
+        .rx_flag_clr(rx_flag_clr),
         .clk(clk),
-        .n_rst(n_rst),
-        .enable(tx_send),
-        .d(Tx_Data),
-        .serialQ(tx)
+        .reset(~n_rst),
+        .enable(1'b1), // always enable
+
+        .parity_error(parity_error),
+        .rx_flag(rx_flag),
+        .Rx_Data(Rx_Data)
     );
 
-    serial_to_parallel #(.width(8)) rx_serial_to_parallel (
-        .clk(clk),
-        .n_rst(n_rst),
-        .enable(rx_flag),
-        .d(rx),
-        .Q(Rx_Data)
-    );
-
-    always @(posedge clk or negedge n_rst) begin
-        if (!n_rst) begin
-            // Reset logic
-        end else begin
-            // UART transmission and reception logic
-        end
-    end
+    // /////////////////////////////////////////////////////////////////////////
+    // uart transmiter
+    // /////////////////////////////////////////////////////////////////////////
+    assign tx = 1'b1; // to do: include transmiter
 
 endmodule
