@@ -31,6 +31,15 @@ module UART
     // /////////////////////////////////////////////////////////////////////////
     // uart transmiter
     // /////////////////////////////////////////////////////////////////////////
-    assign tx = 1'b1; // to do: include transmiter
+    UART_Tx UART_Tx_Inst
+    (
+        .Tx_Data(Tx_Data),
+        .tx_send(tx_send),
+        .clk(clk),
+        .reset(~n_rst),
+        .enable(1'b1), // always enable
+
+        .tx(tx)
+    );
 
 endmodule
