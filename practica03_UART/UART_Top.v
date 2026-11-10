@@ -21,7 +21,7 @@ module UART_Top
     .enable(1'b1), // always enable
     .key_n(KEY[1]),
 
-    .key_pressed(key1_pressed),
+    .key_pressed(key1_pressed)
     );
 
     wire key2_pressed;
@@ -32,7 +32,7 @@ module UART_Top
     .enable(1'b1), // always enable
     .key_n(KEY[2]),
 
-    .key_pressed(key2_pressed),
+    .key_pressed(key2_pressed)
     );
 
     // /////////////////////////////////////////////////////////////////////////

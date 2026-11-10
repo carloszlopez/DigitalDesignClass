@@ -15,7 +15,7 @@ module UART_Rx
     // /////////////////////////////////////////////////////////////////////////
     reg receiving;
     reg parity;
-    wire [9:0] half_bit_cnt;
+    wire [4:0] half_bit_cnt;
     wire half_bit_tick;
     always @(posedge clk) begin
         if (reset) begin
@@ -33,7 +33,7 @@ module UART_Rx
         // receiving, enable does not affect if there receiving started
         end else if (receiving && half_bit_tick) begin
             // start, prepare to receive data if start bit is valid
-            if ((half_bit_cnt == 4'd0)) begin
+            if ((half_bit_cnt == 5'd0)) begin
                 if (rx) begin
                     receiving <= 1'b0;
                 end else begin
@@ -45,51 +45,51 @@ module UART_Rx
                 end
             
             // store d0 and calculate parity
-            end else if (half_bit_cnt == 10'd2) begin
-                Rx_Data[(half_bit_cnt - 2) >> 1] <= rx;
+            end else if (half_bit_cnt == 5'd2) begin
+                Rx_Data[(half_bit_cnt - 5'd2) >> 1'b1] <= rx;
                 parity <= parity ^ rx;
 
             // store d1 and calculate parity
-            end else if (half_bit_cnt == 10'd4) begin
-                Rx_Data[(half_bit_cnt - 2) >> 1] <= rx;
+            end else if (half_bit_cnt == 5'd4) begin
+                Rx_Data[(half_bit_cnt - 5'd2) >> 1'b1] <= rx;
                 parity <= parity ^ rx;
 
             // store d2 and calculate parity
-            end else if (half_bit_cnt == 10'd6) begin
-                Rx_Data[(half_bit_cnt - 2) >> 1] <= rx;
+            end else if (half_bit_cnt == 5'd6) begin
+                Rx_Data[(half_bit_cnt - 5'd2) >> 1'b1] <= rx;
                 parity <= parity ^ rx;
 
             // store d3 and calculate parity
-            end else if (half_bit_cnt == 10'd8) begin
-                Rx_Data[(half_bit_cnt - 2) >> 1] <= rx;
+            end else if (half_bit_cnt == 5'd8) begin
+                Rx_Data[(half_bit_cnt - 5'd2) >> 1'b1] <= rx;
                 parity <= parity ^ rx;
 
             // store d4 and calculate parity
-            end else if (half_bit_cnt == 10'd10) begin
-                Rx_Data[(half_bit_cnt - 2) >> 1] <= rx;
+            end else if (half_bit_cnt == 5'd10) begin
+                Rx_Data[(half_bit_cnt - 5'd2) >> 1'b1] <= rx;
                 parity <= parity ^ rx;
 
             // store d5 and calculate parity
-            end else if (half_bit_cnt == 10'd12) begin
-                Rx_Data[(half_bit_cnt - 2) >> 1] <= rx;
+            end else if (half_bit_cnt == 5'd12) begin
+                Rx_Data[(half_bit_cnt - 5'd2) >> 1'b1] <= rx;
                 parity <= parity ^ rx;
 
             // store d6 and calculate parity
-            end else if (half_bit_cnt == 10'd14) begin
-                Rx_Data[(half_bit_cnt - 2) >> 1] <= rx;
+            end else if (half_bit_cnt == 5'd14) begin
+                Rx_Data[(half_bit_cnt - 5'd2) >> 1'b1] <= rx;
                 parity <= parity ^ rx;
 
             // store d7 and calculate parity
-            end else if (half_bit_cnt == 10'd16) begin
-                Rx_Data[(half_bit_cnt - 2) >> 1] <= rx;
+            end else if (half_bit_cnt == 5'd16) begin
+                Rx_Data[(half_bit_cnt - 5'd2) >> 1'b1] <= rx;
                 parity <= parity ^ rx;
             
             // check parity
-            end else if (half_bit_cnt == 10'd18) begin
+            end else if (half_bit_cnt == 5'd18) begin
                 parity_error <= (parity != rx);
 
             // stop
-            end else if (half_bit_cnt == 10'd20) begin
+            end else if (half_bit_cnt == 5'd20) begin
                 receiving <= 1'b0;
                 rx_flag <=1;
             end
@@ -111,7 +111,7 @@ module UART_Rx
         .reset(reset || !receiving),
         .enable(receiving), // always enabled
         .load(1'b0), // never reload
-        .cnt_in(1'b0), // never reload
+        .cnt_in(12'd0), // never reload
         
         .cnt(), // not used
         .max_hit(half_bit_tick)
@@ -119,8 +119,8 @@ module UART_Rx
 
     // counter the half bit ticks
     counter #(
-        .SIZE(4'd10),
-        .MAX_CUT(10'd22),
+        .SIZE(4'd5),
+        .MAX_CUT(5'd22),
         .COUNT_DOWN(1'b0)
     )
     counter_half_bit_position (
@@ -128,10 +128,11 @@ module UART_Rx
         .reset(reset || !receiving),
         .enable(receiving && half_bit_tick),
         .load(1'b0), // never reload
-        .cnt_in(1'b0), // never reload
+        .cnt_in(5'd0), // never reload
         
         .cnt(half_bit_cnt),
         .max_hit() // not used
     );
 
 endmodule
+
