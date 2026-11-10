@@ -14,6 +14,7 @@ module UART_Tx
     reg transmiting;
     reg parity;
     wire [9:0] half_bit_cnt;
+    wire half_bit_tick;
     always @(posedge clk) begin
         if (reset) begin
             transmiting <= 1'b0;
@@ -90,7 +91,6 @@ module UART_Tx
     // Half bit counter
     // /////////////////////////////////////////////////////////////////////////
     // generate a tick every half bit
-    wire half_bit_tick;
 
     counter #(
         .SIZE(4'd12),

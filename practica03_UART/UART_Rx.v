@@ -16,6 +16,7 @@ module UART_Rx
     reg receiving;
     reg parity;
     wire [9:0] half_bit_cnt;
+    wire half_bit_tick;
     always @(posedge clk) begin
         if (reset) begin
             rx_flag <= 1'b0;
@@ -99,7 +100,6 @@ module UART_Rx
     // Half bit counter
     // /////////////////////////////////////////////////////////////////////////
     // generate a tick every half bit
-    wire half_bit_tick;
 
     counter #(
         .SIZE(4'd12),
