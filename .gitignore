@@ -34,3 +34,10 @@ vsim.wlf
 /cs_pin_model_dump.txt
 /dir
 questa_test_bench.cr.mti
+
+# MBD related
+/Hopping_Daisy/50_Tools/slprj/*
+Hopping_Daisy/40_Source/hopping_daisy/*
+!Hopping_Daisy/40_Source/hopping_daisy/*.v
+*.slxc
+*.slx.autosave

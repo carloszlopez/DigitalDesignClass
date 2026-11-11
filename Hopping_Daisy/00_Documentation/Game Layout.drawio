@@ -1,0 +1,37 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.1.2 Chrome/138.0.7204.243 Electron/37.4.0 Safari/537.36" version="28.1.2">
+  <diagram id="YO4kM3vplsWBLmPB_RwC" name="Game layout">
+    <mxGraphModel dx="1412" dy="827" grid="1" gridSize="1" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="640" pageHeight="480" background="#FFFFFF" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="SwtzA0WXJp2e7pbDbs8K-10" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#808080;strokeColor=none;movable=0;resizable=0;rotatable=0;deletable=0;editable=0;locked=1;connectable=0;verticalAlign=top;align=left;" parent="1" vertex="1">
+          <mxGeometry width="800" height="525" as="geometry" />
+        </mxCell>
+        <mxCell id="SwtzA0WXJp2e7pbDbs8K-9" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#333333;strokeColor=none;movable=0;resizable=0;rotatable=0;deletable=0;editable=0;locked=1;connectable=0;verticalAlign=top;align=left;" parent="1" vertex="1">
+          <mxGeometry width="752" height="492" as="geometry" />
+        </mxCell>
+        <mxCell id="SwtzA0WXJp2e7pbDbs8K-8" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#000000;strokeColor=none;movable=0;resizable=0;rotatable=0;deletable=0;editable=0;locked=1;connectable=0;verticalAlign=top;align=left;" parent="1" vertex="1">
+          <mxGeometry width="656" height="490" as="geometry" />
+        </mxCell>
+        <mxCell id="SwtzA0WXJp2e7pbDbs8K-4" value="&lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;&lt;b&gt;sky&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#0080FF;strokeColor=none;movable=0;resizable=0;rotatable=0;deletable=0;editable=0;locked=1;connectable=0;" parent="1" vertex="1">
+          <mxGeometry width="640" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="y7k84d-5Fx2XQUI77C5_-2" value="&lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;&lt;b&gt;ground&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#30B040;strokeColor=none;movable=0;resizable=0;rotatable=0;deletable=0;editable=0;locked=1;connectable=0;" parent="1" vertex="1">
+          <mxGeometry y="400" width="640" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="y7k84d-5Fx2XQUI77C5_-5" value="&lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;&lt;b&gt;daisy&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=none;movable=0;resizable=0;rotatable=0;deletable=0;editable=0;locked=1;connectable=0;" parent="1" vertex="1">
+          <mxGeometry x="80" y="360" width="40" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="y7k84d-5Fx2XQUI77C5_-6" value="&lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;&lt;b&gt;obstacle&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FF2020;strokeColor=none;movable=0;resizable=0;rotatable=0;deletable=0;editable=0;locked=1;connectable=0;" parent="1" vertex="1">
+          <mxGeometry x="600" y="370" width="20" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="y7k84d-5Fx2XQUI77C5_-7" value="&lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;&lt;b&gt;SCORE TEXT&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=none;movable=0;resizable=0;rotatable=0;deletable=0;editable=0;locked=1;connectable=0;" parent="1" vertex="1">
+          <mxGeometry x="16" y="16" width="80" height="7" as="geometry" />
+        </mxCell>
+        <mxCell id="y7k84d-5Fx2XQUI77C5_-8" value="&lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;&lt;b&gt;GAME STATE&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=none;movable=0;resizable=0;rotatable=0;deletable=0;editable=0;locked=1;connectable=0;" parent="1" vertex="1">
+          <mxGeometry x="544" y="16" width="80" height="7" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
