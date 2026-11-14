@@ -17,8 +17,8 @@ module hopping_daisy_top_level (
            .clk(CLOCK_50),
            .reset(~KEY[0]),
            .enable(1'b1), // always enabled
-           .start_key(KEY[1]),
-           .jump_key(KEY[3]),
+           .up(~KEY[1]),
+           .dwn(~KEY[2]),
            .ce_out(), // not connected
            .VGA_R(VGA_R),
            .VGA_G(VGA_G),
