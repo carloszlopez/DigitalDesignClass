@@ -1,4 +1,5 @@
 score_text  = "score "
+record_text  = "record "
 game_init_text = "PRESS ANY K "
 game_over_text = "GAME OVER   "
 game_started_text = "GAME STARTED"
